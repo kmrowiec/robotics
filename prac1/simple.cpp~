@@ -180,7 +180,7 @@ void moveTo(Position2dProxy *pp, PlayerClient *robot, char c){
     case 'N':
       break;
     case 'S':
-      rotate(pp, robot, -180);
+      rotate(&pp, &robot, -180);
       break;
     case 'E':
       return;
