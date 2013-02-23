@@ -29,8 +29,13 @@
 #include <iostream>
 #include <libplayerc++/playerc++.h>
 #include <math.h>
+//#include <"robot.cpp">
 
 using namespace PlayerCc;
+
+//0.001 for robot , 0.1 for simulator
+const float ROTATE_ERROR = 0.1;
+const float ROTATE_SLOW_SPEED = 1; //10 for robot, 1 for sim
 
 void rotate(Position2dProxy *pp, PlayerClient *robot, int degrees);
 void move(Position2dProxy *pp, PlayerClient *robot, double distance);
@@ -42,23 +47,23 @@ int main(int argc, char *argv[])
 {
 	
 
-	PlayerClient    robot("bart.islnet");
-	SonarProxy      sp(&robot,0);
+	PlayerClient    robot("localhost");
+	RangerProxy      sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 // 	pp = new Position2dProxy(&robot,0);
 
 	pp.SetMotorEnable(true);
 
-	/*
-	move(&pp, &robot, 2);
-	rotate(&pp, &robot, -90);
-	move(&pp, &robot, 2);
-	rotate(&pp, &robot, -90);
-	move(&pp, &robot, 2);
-	rotate(&pp, &robot, -90);
-	move(&pp, &robot, 2); */
 	
-	moveTo(&pp, &robot, 'N');
+	move(&pp, &robot, 2);
+	rotate(&pp, &robot, -90);
+	move(&pp, &robot, 2);
+	rotate(&pp, &robot, -90);
+	move(&pp, &robot, 2);
+	rotate(&pp, &robot, -90);
+	move(&pp, &robot, 2); 
+	
+	//moveTo(&pp, &robot, 'N');
 	
 	//for(;;)
 	//{
@@ -108,8 +113,6 @@ void rotate(Position2dProxy *pp, PlayerClient *robot, int degrees){
     
     for(;;){
       
-     
-      
       robot->Read(); // reading sensors
       currentAngle = rtod(pp->GetYaw());
       distance = calcAngularDistance(currentAngle, expectedAngle);
@@ -120,25 +123,22 @@ void rotate(Position2dProxy *pp, PlayerClient *robot, int degrees){
       std::cout << "Distance: " << distance << std::endl;
       
       
-      if(distance < 0.001){
-	int i = 0;
-	  speed = 10;
-	  if(degrees<0)
-		pp->SetSpeed(0,dtor(-speed));
-          else
-		pp->SetSpeed(0,dtor(speed));
-	usleep(600000);
-	return;
-      }
-	
- 
-      
-      
+      if(distance < ROTATE_ERROR){
+		//int i = 0;
+		//speed = 10;
+		//if(degrees<0)
+			//pp->SetSpeed(0,dtor(-speed));
+        //else
+			//pp->SetSpeed(0,dtor(speed));
+		
+		//usleep(600000);
+		return;
+      } 
       
       //If distance to the desired angle is high, we can move faster
       //but when we get closer, need to slow down to increase accuracy.
       if(distance > 15) speed = 20;
-      else speed = 10;
+      else speed = ROTATE_SLOW_SPEED;
        
       if(degrees<0)
 		pp->SetSpeed(0,dtor(-speed));
@@ -183,9 +183,11 @@ void moveTo(Position2dProxy *pp, PlayerClient *robot, char c){
       rotate(pp, robot, -180);
       break;
     case 'E':
-      return;
+      rotate(pp, robot, -90);
+      break;
     case 'W':
-      return;
+      rotate(pp, robot, 90);
+      break;
       
   }
   
