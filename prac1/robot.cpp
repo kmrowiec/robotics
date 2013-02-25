@@ -1,148 +1,118 @@
 #include <iostream>
 #include <string>
 #include <libplayerc++/playerc++.h>
+#include <robot.h>
 
 using namespace PlayerCc;
 using namespace std;
 
-//0.001 for robot , 0.1 for simulator
-const float ROTATE_ERROR = 0.1;
-const float ROTATE_SLOW_SPEED = 2; //10 for robot, 5 for sim
-const int GRID_SIZE = 30;
+Robot::Robot(string cl) {
+    client = new PlayerClient(cl);
+    sp = new RangerProxy(client, 0);
+    pp = new Position2dProxy(client, 0);
+    pp->SetMotorEnable(true);
+    h = SOUTH;
 
-enum Heading{
-	NORTH,
-	EAST,
-	SOUTH,
-	WEST
-};
+    int x = 0, y = 0;
+    for (x; x < GRID_SIZE; x++) {
+        for (y = 0; y < GRID_SIZE; y++) {
+            grid[x][y] = -1;
+        }
+    }
+}
 
-class Robot{
-	
-	public:
-	PlayerClient* client;
-	RangerProxy* sp;
-	Position2dProxy* pp;
-	int grid[GRID_SIZE][GRID_SIZE];
-	int p[5][5]; //proximity 
-	int gX, gY; //position on the grid
-	Heading h;
-	
-	/*
-	void rotate(int degrees);
-	void move(double distance);
-	float calcAngularDistance(float a1, float a2);
-	void moveTo(char c);
-	*/
-	
-	public:
-	Robot(string cl){
-		client = new PlayerClient(cl);
-		sp = new RangerProxy(client, 0);
-		pp = new Position2dProxy(client,0);
-		pp->SetMotorEnable(true);
-		h = SOUTH;
-		
-		int x = 0, y = 0;
-		for(x; x<GRID_SIZE; x++){
-			for(y = 0; y<GRID_SIZE; y++){
-				 grid[x][y] = -1;
-			}
-		}
-	}
+void Robot::rotate90() {
 
-void rotate90(){
-	
-}	
-	
-void rotate(int degrees){
+}
+
+void Robot::rotate(int degrees) {
 
     client->Read();
     float initialAngle = rtod(pp->GetYaw());
-    
+
     float currentAngle = 0;
-    
+
     //Caclulating expected angle (in degrees)
     //If ig goes above 181, need to substract -360
     //Or add 360 if below -180
     float expectedAngle = initialAngle + degrees;
-    if(expectedAngle > 180) expectedAngle -= 360;
-    else if(expectedAngle < -180) expectedAngle += 360;
-    
+    if (expectedAngle > 180) expectedAngle -= 360;
+    else if (expectedAngle < -180) expectedAngle += 360;
+
     int speed = 5;
     float distance = 0;
-    
-    for(;;){
-      
-      client->Read(); // reading sensors
-      currentAngle = rtod(pp->GetYaw());
-      distance = calcAngularDistance(currentAngle, expectedAngle);
-      
-      std::cout << "Started at : " << initialAngle << std::endl;
-      std::cout << "Current angle: " << currentAngle << std::endl;
-      std::cout << "Going to: " << expectedAngle << std::endl;
-      std::cout << "Distance: " << distance << std::endl;
-      
-      
-      if(distance < ROTATE_ERROR){
-		//int i = 0;
-		//speed = 10;
-		//if(degrees<0)
-			//pp->SetSpeed(0,dtor(-speed));
-        //else
-			//pp->SetSpeed(0,dtor(speed));
-		
-		//usleep(600000);
-		return;
-      }
-      
-      //If distance to the desired angle is high, we can move faster
-      //but when we get closer, need to slow down to increase accuracy.
-      if(distance > 15) speed = 20;
-      else speed = ROTATE_SLOW_SPEED;
-       
-      if(degrees<0)
-		pp->SetSpeed(0,dtor(-speed));
-      else
-		pp->SetSpeed(0,dtor(speed));
-      
-	}
-	} //end of rotate function
 
-void moveToCell(Heading dest){
-	switch(dest){
-		case NORTH:
-			move(0.6);
-			//changing xy position on the grid
-			if(h==NORTH) gY--;
-			else if(h==EAST) gX++;
-			else if(h==WEST) gX--;
-			else gY++;
-		break;
-	}
+    for (;;) {
+
+        client->Read(); // reading sensors
+        currentAngle = rtod(pp->GetYaw());
+        distance = calcAngularDistance(currentAngle, expectedAngle);
+
+        std::cout << "Started at : " << initialAngle << std::endl;
+        std::cout << "Current angle: " << currentAngle << std::endl;
+        std::cout << "Going to: " << expectedAngle << std::endl;
+        std::cout << "Distance: " << distance << std::endl;
+
+
+        if (distance < ROTATE_ERROR) {
+            //int i = 0;
+            //speed = 10;
+            //if(degrees<0)
+            //pp->SetSpeed(0,dtor(-speed));
+            //else
+            //pp->SetSpeed(0,dtor(speed));
+
+            //usleep(600000);
+            return;
+        }
+
+        //If distance to the desired angle is high, we can move faster
+        //but when we get closer, need to slow down to increase accuracy.
+        if (distance > 15) speed = 20;
+        else speed = ROTATE_SLOW_SPEED;
+
+        if (degrees < 0)
+            pp->SetSpeed(0, dtor(-speed));
+        else
+            pp->SetSpeed(0, dtor(speed));
+
+    }
+} //end of rotate function
+
+void Robot::moveToCell(Heading dest) {
+    switch (dest) {
+        case NORTH:
+            move(0.6);
+            //changing xy position on the grid
+            if (h == NORTH) gY--;
+            else if (h == EAST) gX++;
+            else if (h == WEST) gX--;
+            else gY++;
+            break;
+    }
 }
 
-void move(double distance){
+void Robot::move(double distance) {
     client->Read();
     double iX, iY;
     iX = pp->GetXPos();
     iY = pp->GetYPos();
-    
+
     double cX, cY;
     double cDistance;
-    
-    for(;;){
-      client->Read();
-      cX = pp->GetXPos();
-      cY = pp->GetYPos();
-      //std::cout << "X: " <<cX<<"Y: "<<cY << std::endl;
-      
-      cDistance = sqrt( pow(cX-iX, 2) + pow(cY-iY,2));   
-      if(cDistance - distance >= -0.05) break;
-      pp->SetSpeed(0.2, 0);
-      
+
+    for (;;) {
+        client->Read();
+        cX = pp->GetXPos();
+        cY = pp->GetYPos();
+        //std::cout << "X: " <<cX<<"Y: "<<cY << std::endl;
+
+        cDistance = sqrt(pow(cX - iX, 2) + pow(cY - iY, 2));
+        if (cDistance - distance >= -0.05) break;
+        pp->SetSpeed(0.2, 0);
+
     }
-    
+
 }
 
 /**
@@ -155,224 +125,219 @@ void move(double distance){
  * (if those closer are occupied, the further are unknown).
  * Warning! Awful function!
  */
-void checkProximity(){
-	client->Read();
-	p[0][1] = -1;
-	p[4][1] = -1;
-	p[0][3] = -1;
-	p[4][3] = -1;
-	
-	//Front cells
-	if((*sp)[3] < 0.6 && (*sp)[4] < 0.6){
-		p[2][1] = 1;
-		p[2][0] = -1;
-		p[3][0] = -1;
-		p[1][0] = -1;
-		p[1][1] = -1;
-		p[3][1] = -1;
-		p[0][0] = -1;
-		p[4][0] = -1;
-	}else{ //if front cell is empty then all other in front can be checked
-		p[2][1] = 0;
-		if((*sp)[3] < 1.2 && (*sp)[4] < 1.2){
-			p[2][0] = 1;
-		}else{
-			p[2][0] = 0;
-		}
-		//checking diagonally to the left
-		if((*sp)[1] < 1){
-			p[1][1] = 1;
-			p[0][0] = -1;
-		}else{ //if 11 is empty
-			p[1][1] = 0;
-			if((*sp)[1] < 1.8){
-				p[0][0] = 1;
-			}else p[0][0] = 0;
-		}
-		if((*sp)[2] < 1.5){
-			p[1][0] = 1;
-		}else p[1][0] = 0;
-			
-		//checking diagonally to the right
-		if((*sp)[6] < 1){
-			p[3][1] = 1;
-			p[4][0] = -1;
-		}else{
-			p[3][1] = 0;
-			if((*sp)[6] < 1.8){
-				p[4][0] = 1;
-			}else p[4][0] = 0;
-		}
-		if((*sp)[5] < 1.5){
-			p[3][0] = 1;
-		}else p[3][0] = 0;
-		
-	}//end of checking cells to the front
-	
-	//And mirroring it for back cells
-	if((*sp)[11] < 0.6 && (*sp)[12] < 0.6){
-		p[2][3] = 1;
-		p[4][4] = -1;
-		p[1][3] = -1;
-		p[3][3] = -1;
-		p[4][3] = -1;
-		p[2][4] = -1;
-		p[0][4] = -1;
-		p[3][4] = -1;
-		p[1][4] = -1;
-	}else{ //if cell behing is empty then all other can be checked
-		p[2][3] = 0;
-		if((*sp)[11] < 1.2 && (*sp)[12] < 1.2){
-			p[2][4] = 1;
-		}else{
-			p[2][4] = 0;
-		}
-		//checking diagonally to the left
-		if((*sp)[14] < 1){
-			p[1][3] = 1;
-			p[0][4] = -1;
-		}else{ //if 11 is empty
-			p[1][3] = 0;
-			if((*sp)[14] < 1.8){
-				p[0][4] = 1;
-			}else p[0][4] = 0;
-		}
-		if((*sp)[13] < 1.5){
-			p[1][4] = 1;
-		}else p[1][4] = 0;
-			
-		//checking diagonally to the right
-		if((*sp)[9] < 1){
-			p[3][3] = 1;
-			p[4][4] = -1;
-		}else{
-			p[3][3] = 0;
-			if((*sp)[9] < 1.8){
-				p[4][4] = 1;
-			}else p[4][4] = 0;
-		}
-		if((*sp)[10] < 1.5){
-			p[3][4] = 1;
-		}else p[3][4] = 0;
-	}
-	//And finally checking the sides
-	if((*sp)[0] < 0.6 && (*sp)[15] < 0.6){
-		p[1][2] = 1;
-		p[0][2] = -1;
-	}else{
-		p[1][2] = 0;
-		if((*sp)[0] < 1.2 && (*sp)[15] < 1.2){
-			p[0][2] = 1;
-		}else p[0][2] = 0;
-	}
-	
-	if((*sp)[6] < 0.6 && (*sp)[7] < 0.6){
-		p[3][2] = 1;
-		p[4][2] = -1;
-	}else{
-		p[3][2] = 0;
-		if((*sp)[6] < 1.2 && (*sp)[7] < 1.2){
-			p[4][2] = 1;
-		}else p[4][2] = 0;
-	}
-	
-	//Printing out sensors reading and proximity.
-	//cout << *sp <<endl;
-	//cout << p[0][0] << p[1][0] << p[2][0] << p[3][0] << p[4][0] <<endl;
-	//cout << p[0][1] << p[1][1] << p[2][1] << p[3][1] << p[4][1] <<endl;
-	//cout << p[0][2] << p[1][2] << "R" << p[3][2] << p[4][2] <<endl;
-	//cout << p[0][3] << p[1][3] << p[2][3] << p[3][3] << p[4][3] <<endl;
-	//cout << p[0][4] << p[1][4] << p[2][4] << p[3][4] << p[4][4] <<endl;		
+void Robot::checkProximity() {
+    client->Read();
+    p[0][1] = -1;
+    p[4][1] = -1;
+    p[0][3] = -1;
+    p[4][3] = -1;
+
+    //Front cells
+    if ((*sp)[3] < 0.6 && (*sp)[4] < 0.6) {
+        p[2][1] = 1;
+        p[2][0] = -1;
+        p[3][0] = -1;
+        p[1][0] = -1;
+        p[1][1] = -1;
+        p[3][1] = -1;
+        p[0][0] = -1;
+        p[4][0] = -1;
+    } else { //if front cell is empty then all other in front can be checked
+        p[2][1] = 0;
+        if ((*sp)[3] < 1.2 && (*sp)[4] < 1.2) {
+            p[2][0] = 1;
+        } else {
+            p[2][0] = 0;
+        }
+        //checking diagonally to the left
+        if ((*sp)[1] < 1) {
+            p[1][1] = 1;
+            p[0][0] = -1;
+        } else { //if 11 is empty
+            p[1][1] = 0;
+            if ((*sp)[1] < 1.8) {
+                p[0][0] = 1;
+            } else p[0][0] = 0;
+        }
+        if ((*sp)[2] < 1.5) {
+            p[1][0] = 1;
+        } else p[1][0] = 0;
+
+        //checking diagonally to the right
+        if ((*sp)[6] < 1) {
+            p[3][1] = 1;
+            p[4][0] = -1;
+        } else {
+            p[3][1] = 0;
+            if ((*sp)[6] < 1.8) {
+                p[4][0] = 1;
+            } else p[4][0] = 0;
+        }
+        if ((*sp)[5] < 1.5) {
+            p[3][0] = 1;
+        } else p[3][0] = 0;
+
+    }//end of checking cells to the front
+
+    //And mirroring it for back cells
+    if ((*sp)[11] < 0.6 && (*sp)[12] < 0.6) {
+        p[2][3] = 1;
+        p[4][4] = -1;
+        p[1][3] = -1;
+        p[3][3] = -1;
+        p[4][3] = -1;
+        p[2][4] = -1;
+        p[0][4] = -1;
+        p[3][4] = -1;
+        p[1][4] = -1;
+    } else { //if cell behing is empty then all other can be checked
+        p[2][3] = 0;
+        if ((*sp)[11] < 1.2 && (*sp)[12] < 1.2) {
+            p[2][4] = 1;
+        } else {
+            p[2][4] = 0;
+        }
+        //checking diagonally to the left
+        if ((*sp)[14] < 1) {
+            p[1][3] = 1;
+            p[0][4] = -1;
+        } else { //if 11 is empty
+            p[1][3] = 0;
+            if ((*sp)[14] < 1.8) {
+                p[0][4] = 1;
+            } else p[0][4] = 0;
+        }
+        if ((*sp)[13] < 1.5) {
+            p[1][4] = 1;
+        } else p[1][4] = 0;
+
+        //checking diagonally to the right
+        if ((*sp)[9] < 1) {
+            p[3][3] = 1;
+            p[4][4] = -1;
+        } else {
+            p[3][3] = 0;
+            if ((*sp)[9] < 1.8) {
+                p[4][4] = 1;
+            } else p[4][4] = 0;
+        }
+        if ((*sp)[10] < 1.5) {
+            p[3][4] = 1;
+        } else p[3][4] = 0;
+    }
+    //And finally checking the sides
+    if ((*sp)[0] < 0.6 && (*sp)[15] < 0.6) {
+        p[1][2] = 1;
+        p[0][2] = -1;
+    } else {
+        p[1][2] = 0;
+        if ((*sp)[0] < 1.2 && (*sp)[15] < 1.2) {
+            p[0][2] = 1;
+        } else p[0][2] = 0;
+    }
+
+    if ((*sp)[6] < 0.6 && (*sp)[7] < 0.6) {
+        p[3][2] = 1;
+        p[4][2] = -1;
+    } else {
+        p[3][2] = 0;
+        if ((*sp)[6] < 1.2 && (*sp)[7] < 1.2) {
+            p[4][2] = 1;
+        } else p[4][2] = 0;
+    }
+
+    //Printing out sensors reading and proximity.
+    //cout << *sp <<endl;
+    //cout << p[0][0] << p[1][0] << p[2][0] << p[3][0] << p[4][0] <<endl;
+    //cout << p[0][1] << p[1][1] << p[2][1] << p[3][1] << p[4][1] <<endl;
+    //cout << p[0][2] << p[1][2] << "R" << p[3][2] << p[4][2] <<endl;
+    //cout << p[0][3] << p[1][3] << p[2][3] << p[3][3] << p[4][3] <<endl;
+    //cout << p[0][4] << p[1][4] << p[2][4] << p[3][4] << p[4][4] <<endl;		
 }
 
 /**
  * Applies the information about cells nearby to the occupancy grid. 
  */
-void applyProximityToGrid(){
-	int sX, sY;
-	int x, y;
-	switch(h){
-		case NORTH:
-			sX = gX-2;
-			sY = gY-2;
-			for(y = 0; y <5; y++){
-				for(x = 0; x < 5; x++){
-					if(p[x][y]!=-1)
-					grid[sX+x][sY+y] =p[x][y]; 
-				}
-			}
-			break;
-		case EAST:
-			sX = gX + 2;
-			sY = gY - 2;
-			for(y = 0; y <5; y++){
-				for(x = 0; x < 5; x++){
-					grid[sX-y][sY+x] = p[x][y]; 
-				}
-			}
-			break;
-		case WEST:
-			sX = gX - 2;
-			sY = gY + 2;
-			for(y = 0; y <5; y++){
-				for(x = 0; x < 5; x++){
-					grid[sX+y][sY-x] = p[x][y]; 
-				}
-			}
-			break;
-		case SOUTH:
-			sX = gX + 2;
-			sY = gY + 2;
-			for(y = 0; y <5; y++){
-				for(x = 0; x < 5; x++){
-					grid[sX-x][sY-y] = p[x][y]; 
-				}
-			}
-			break;
-			
-	 }
+void Robot::applyProximityToGrid() {
+    int sX, sY;
+    int x, y;
+    switch (h) {
+        case NORTH:
+            sX = gX - 2;
+            sY = gY - 2;
+            for (y = 0; y < 5; y++) {
+                for (x = 0; x < 5; x++) {
+                    if (p[x][y] != -1)
+                        grid[sX + x][sY + y] = p[x][y];
+                }
+            }
+            break;
+        case EAST:
+            sX = gX + 2;
+            sY = gY - 2;
+            for (y = 0; y < 5; y++) {
+                for (x = 0; x < 5; x++) {
+                    grid[sX - y][sY + x] = p[x][y];
+                }
+            }
+            break;
+        case WEST:
+            sX = gX - 2;
+            sY = gY + 2;
+            for (y = 0; y < 5; y++) {
+                for (x = 0; x < 5; x++) {
+                    grid[sX + y][sY - x] = p[x][y];
+                }
+            }
+            break;
+        case SOUTH:
+            sX = gX + 2;
+            sY = gY + 2;
+            for (y = 0; y < 5; y++) {
+                for (x = 0; x < 5; x++) {
+                    grid[sX - x][sY - y] = p[x][y];
+                }
+            }
+            break;
+
+    }
 }
 
-
-private :
 /**
  * Calculates the distance between two angles.
  * Input as values in robot's range.
  */
- float calcAngularDistance(float a1, float a2){
-	if(a1 < 0) a1+=360;
-	if(a2 < 0) a2+=360;
-	
-	float dist = a2 - a1;
-	if(dist < 0) dist = -dist;
-	if(dist > 180) dist = 360 - dist;
-	return dist;
+float Robot::calcAngularDistance(float a1, float a2) {
+    if (a1 < 0) a1 += 360;
+    if (a2 < 0) a2 += 360;
+
+    float dist = a2 - a1;
+    if (dist < 0) dist = -dist;
+    if (dist > 180) dist = 360 - dist;
+    return dist;
 }
 
-public:
+void Robot::drawGrid() {
+    int x = 0, y = 0;
+    for (y; y < GRID_SIZE; y++) {
+        for (x = 0; x < GRID_SIZE; x++) {
+            switch (grid[x][y]) {
+                case -1:
+                    cout << "X";
+                    break;
+                case 0:
+                    cout << " ";
+                    break;
+                case 1:
+                    cout << "#";
+                    break;
 
-void drawGrid(){
-	int x = 0, y = 0;
-	for(y; y<GRID_SIZE; y++){
-		for(x = 0; x<GRID_SIZE; x++){
-			switch(grid[x][y]){
-				case -1:
-					cout << "X";
-					break;
-				case 0:
-					cout << " ";
-					break;
-				case 1:
-					cout <<  "#";
-				break;
-					
-			}
-			//cout << grid[x][y] ;
-		}
-		cout << endl;
-	}
+            }
+            //cout << grid[x][y] ;
+        }
+        cout << endl;
+    }
 }
 
-};//end of robot class
 
 
