@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <libplayerc++/playerc++.h>
-#include </home/kamil/robotics/prac1/robot.cpp>
+//#include </home/kamil/robotics/prac1/robot.cpp>
+#include </home/kamil/NetBeansProjects/robotics/prac1/robot.cpp>
 
 using namespace std;
 
