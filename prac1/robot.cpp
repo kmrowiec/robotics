@@ -8,7 +8,7 @@ using namespace std;
 
 Robot::Robot(string cl) {
     client = new PlayerClient(cl);
-    sp = new RangerProxy(client, 0);
+    sp = new SonarProxy(client, 0);
     pp = new Position2dProxy(client, 0);
     pp->SetMotorEnable(true);
     h = SOUTH;
@@ -31,7 +31,7 @@ void Robot::changeHeading(Heading h) {
 			break;
 		case EAST:
 			rotate(-90);
-			this.h++;
+			//this->h++;
 			break;
 			
 		
@@ -123,8 +123,9 @@ void Robot::move(double distance) {
         //std::cout << "X: " <<cX<<"Y: "<<cY << std::endl;
 
         cDistance = sqrt(pow(cX - iX, 2) + pow(cY - iY, 2));
-        if (cDistance - distance >= -0.05) break;
-        pp->SetSpeed(0.2, 0);
+        if (cDistance - distance >= -0.005) break;
+        if (cDistance - distance >= -0.2) pp->SetSpeed(0.1, 0);
+        else pp->SetSpeed(0.2, 0);
 
     }
 
@@ -262,12 +263,12 @@ void Robot::checkProximity() {
     }
 
     //Printing out sensors reading and proximity.
-    //cout << *sp <<endl;
-    //cout << p[0][0] << p[1][0] << p[2][0] << p[3][0] << p[4][0] <<endl;
-    //cout << p[0][1] << p[1][1] << p[2][1] << p[3][1] << p[4][1] <<endl;
-    //cout << p[0][2] << p[1][2] << "R" << p[3][2] << p[4][2] <<endl;
-    //cout << p[0][3] << p[1][3] << p[2][3] << p[3][3] << p[4][3] <<endl;
-    //cout << p[0][4] << p[1][4] << p[2][4] << p[3][4] << p[4][4] <<endl;		
+    cout << *sp <<endl;
+    cout << p[0][0] << p[1][0] << p[2][0] << p[3][0] << p[4][0] <<endl;
+    cout << p[0][1] << p[1][1] << p[2][1] << p[3][1] << p[4][1] <<endl;
+    cout << p[0][2] << p[1][2] << "R" << p[3][2] << p[4][2] <<endl;
+    cout << p[0][3] << p[1][3] << p[2][3] << p[3][3] << p[4][3] <<endl;
+    cout << p[0][4] << p[1][4] << p[2][4] << p[3][4] << p[4][4] <<endl;		
 }
 
 /**

@@ -18,8 +18,8 @@ extern "C" {
 using namespace PlayerCc;    
 
 //0.001 for robot , 0.1 for simulator
-const float ROTATE_ERROR = 0.1;
-const float ROTATE_SLOW_SPEED = 2; //10 for robot, 5 for sim
+const float ROTATE_ERROR = 0.002;
+const float ROTATE_SLOW_SPEED = 10; //10 for robot, 5 for sim
 const int GRID_SIZE = 30;
 
 
@@ -34,7 +34,7 @@ class Robot{
 	
 	public:
 	PlayerClient* client;
-	RangerProxy* sp;
+	SonarProxy* sp;
 	Position2dProxy* pp;
 	int grid[GRID_SIZE][GRID_SIZE];
 	int p[5][5]; //proximity 
