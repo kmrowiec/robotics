@@ -42,7 +42,7 @@ class Robot{
 	Heading h;
         
         Robot(std::string cl);
-        void rotate90();
+        void changeHeading(Heading h);
         void rotate(int degrees);
         void moveToCell(Heading dest);
         void move(double distance);

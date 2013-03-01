@@ -21,8 +21,23 @@ Robot::Robot(string cl) {
     }
 }
 
-void Robot::rotate90() {
-
+/**
+ * Changes the actual heading of a robot by rotating it 
+ * (to the new heading, which is relative to the existing one).
+ */
+void Robot::changeHeading(Heading h) {
+	switch(h){
+		case NORTH:
+			break;
+		case EAST:
+			rotate(-90);
+			this.h++;
+			break;
+			
+		
+	}
+	
+	
 }
 
 void Robot::rotate(int degrees) {
