@@ -8,10 +8,15 @@ using namespace std;
 
 Robot::Robot(string cl) {
     client = new PlayerClient(cl);
-    sp = new SonarProxy(client, 0);
+    #ifdef ROBOT
+		sp = new SonarProxy(client, 0);
+    #else
+		sp = new RangerProxy(client, 0);
+    #endif
+     
     pp = new Position2dProxy(client, 0);
     pp->SetMotorEnable(true);
-    h = SOUTH;
+    h = NORTH;
 
     int x = 0, y = 0;
     for (x; x < GRID_SIZE; x++) {
@@ -24,18 +29,31 @@ Robot::Robot(string cl) {
 /**
  * Changes the actual heading of a robot by rotating it 
  * (to the new heading, which is relative to the existing one).
- */
+ * Assuming that robot rotates only in clockwise direction, 
+ * except when rotating to west. (but 180 rotation is clockwise. always)
+ **/
 void Robot::changeHeading(Heading h) {
+	int currentHeading = this->h;
 	switch(h){
-		case NORTH:
+		case NORTH: //cannot rotate forwards!
 			break;
 		case EAST:
 			rotate(-90);
-			//this->h++;
+			currentHeading++;
 			break;
-			
-		
+		case SOUTH:
+			rotate(-180);
+			currentHeading+=2;
+			break;
+		case WEST:
+			rotate(90);
+			currentHeading--;
+			break;
 	}
+	currentHeading = currentHeading % 4;
+	if(currentHeading == 0) currentHeading = 4;
+	this->h = (Heading) currentHeading;
+	
 	
 	
 }

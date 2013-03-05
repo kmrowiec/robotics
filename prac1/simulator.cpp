@@ -7,7 +7,14 @@ using namespace std;
 using namespace PlayerCc;
 
 int main(int argc, char *argv[]){
-	Robot r("bart.islnet");
+	
+	#ifdef ROBOT
+		Robot r("bart.islnet");
+	#else
+		Robot r("localhost");
+	#endif	
+		
+		
 	r.client->Read();
 	sleep(1);
 	
@@ -22,6 +29,13 @@ int main(int argc, char *argv[]){
 	//r.move(0.3);
 	//cout << r.sp[3] << r.sp[4] <<endl;
 	//cout << r.sp <<endl;
+	sleep(1);
+	cout << "Current heading: "<< r.h << endl;
+	sleep(1);
+	r.changeHeading(WEST);
+	cout << "Current heading: "<< r.h << endl;
+	
+	return 1;
 	
 	
 	r.h = NORTH;
