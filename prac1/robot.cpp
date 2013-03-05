@@ -116,6 +116,9 @@ void Robot::rotate(int degrees) {
 
 void Robot::moveToCell(Heading dest) {
     switch (dest) {
+		case WEST:
+			move(0.6);
+			break;
         case NORTH:
             move(0.6);
             //changing xy position on the grid
@@ -123,8 +126,9 @@ void Robot::moveToCell(Heading dest) {
             else if (h == EAST) gX++;
             else if (h == WEST) gX--;
             else gY++;
-            break;
+            break; 
     }
+    
 }
 
 void Robot::move(double distance) {
