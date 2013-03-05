@@ -22,9 +22,11 @@ const int GRID_SIZE = 30;
 #ifdef ROBOT
 const float ROTATE_ERROR = 0.0015;
 const float ROTATE_SLOW_SPEED = 10; 
+const float ROTATE_TRESHOLD = 15; 
 #else
-const float ROTATE_ERROR = 0.1;
-const float ROTATE_SLOW_SPEED = 2; 
+const float ROTATE_ERROR = 0.2;
+const float ROTATE_SLOW_SPEED = 1; 
+const float ROTATE_TRESHOLD = 5; 
 #endif
 
 enum Heading{

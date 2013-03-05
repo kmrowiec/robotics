@@ -80,28 +80,30 @@ void Robot::rotate(int degrees) {
         client->Read(); // reading sensors
         currentAngle = rtod(pp->GetYaw());
         distance = calcAngularDistance(currentAngle, expectedAngle);
-
+		
+		/*
         std::cout << "Started at : " << initialAngle << std::endl;
         std::cout << "Current angle: " << currentAngle << std::endl;
         std::cout << "Going to: " << expectedAngle << std::endl;
         std::cout << "Distance: " << distance << std::endl;
-
+		*/
 
         if (distance < ROTATE_ERROR) {
-            //int i = 0;
-            //speed = 10;
-            //if(degrees<0)
-            //pp->SetSpeed(0,dtor(-speed));
-            //else
-            //pp->SetSpeed(0,dtor(speed));
-
-            //usleep(600000);
+            #ifdef ROBOT
+            int i = 0;
+            speed = 10;
+            if(degrees<0)
+            pp->SetSpeed(0,dtor(-speed));
+            else
+            pp->SetSpeed(0,dtor(speed));
+            usleep(600000);
+			#endif
             return;
         }
 
         //If distance to the desired angle is high, we can move faster
         //but when we get closer, need to slow down to increase accuracy.
-        if (distance > 15) speed = 20;
+        if (distance > ROTATE_TRESHOLD) speed = 20;
         else speed = ROTATE_SLOW_SPEED;
 
         if (degrees < 0)
