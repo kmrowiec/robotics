@@ -21,7 +21,9 @@ Robot::Robot(string cl) {
     int x = 0, y = 0;
     for (x; x < GRID_SIZE; x++) {
         for (y = 0; y < GRID_SIZE; y++) {
-            grid[x][y] = -1;
+            if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
+            grid[x][y] = 1;    //map has a border
+            else grid[x][y] = -1;
         }
     }
 }
@@ -52,10 +54,7 @@ void Robot::changeHeading(Heading h) {
 	}
 	currentHeading = currentHeading % 4;
 	if(currentHeading == 0) currentHeading = 4;
-	this->h = (Heading) currentHeading;
-	
-	
-	
+	this->h = (Heading) currentHeading;	
 }
 
 void Robot::rotate(int degrees) {
@@ -167,132 +166,54 @@ void Robot::move(double distance) {
  */
 void Robot::checkProximity() {
     client->Read();
-    p[0][1] = -1;
-    p[4][1] = -1;
-    p[0][3] = -1;
-    p[4][3] = -1;
-
-    //Front cells
-    if ((*sp)[3] < 0.6 && (*sp)[4] < 0.6) {
-        p[2][1] = 1;
-        p[2][0] = -1;
-        p[3][0] = -1;
-        p[1][0] = -1;
-        p[1][1] = -1;
-        p[3][1] = -1;
-        p[0][0] = -1;
-        p[4][0] = -1;
-    } else { //if front cell is empty then all other in front can be checked
-        p[2][1] = 0;
-        if ((*sp)[3] < 1.2 && (*sp)[4] < 1.2) {
-            p[2][0] = 1;
-        } else {
-            p[2][0] = 0;
-        }
-        //checking diagonally to the left
-        if ((*sp)[1] < 1) {
-            p[1][1] = 1;
-            p[0][0] = -1;
-        } else { //if 11 is empty
-            p[1][1] = 0;
-            if ((*sp)[1] < 1.8) {
-                p[0][0] = 1;
-            } else p[0][0] = 0;
-        }
-        if ((*sp)[2] < 1.5) {
-            p[1][0] = 1;
-        } else p[1][0] = 0;
-
-        //checking diagonally to the right
-        if ((*sp)[6] < 1) {
-            p[3][1] = 1;
-            p[4][0] = -1;
-        } else {
-            p[3][1] = 0;
-            if ((*sp)[6] < 1.8) {
-                p[4][0] = 1;
-            } else p[4][0] = 0;
-        }
-        if ((*sp)[5] < 1.5) {
-            p[3][0] = 1;
-        } else p[3][0] = 0;
-
-    }//end of checking cells to the front
-
-    //And mirroring it for back cells
-    if ((*sp)[11] < 0.6 && (*sp)[12] < 0.6) {
-        p[2][3] = 1;
-        p[4][4] = -1;
-        p[1][3] = -1;
-        p[3][3] = -1;
-        p[4][3] = -1;
-        p[2][4] = -1;
-        p[0][4] = -1;
-        p[3][4] = -1;
-        p[1][4] = -1;
-    } else { //if cell behing is empty then all other can be checked
-        p[2][3] = 0;
-        if ((*sp)[11] < 1.2 && (*sp)[12] < 1.2) {
-            p[2][4] = 1;
-        } else {
-            p[2][4] = 0;
-        }
-        //checking diagonally to the left
-        if ((*sp)[14] < 1) {
-            p[1][3] = 1;
-            p[0][4] = -1;
-        } else { //if 11 is empty
-            p[1][3] = 0;
-            if ((*sp)[14] < 1.8) {
-                p[0][4] = 1;
-            } else p[0][4] = 0;
-        }
-        if ((*sp)[13] < 1.5) {
-            p[1][4] = 1;
-        } else p[1][4] = 0;
-
-        //checking diagonally to the right
-        if ((*sp)[9] < 1) {
-            p[3][3] = 1;
-            p[4][4] = -1;
-        } else {
-            p[3][3] = 0;
-            if ((*sp)[9] < 1.8) {
-                p[4][4] = 1;
-            } else p[4][4] = 0;
-        }
-        if ((*sp)[10] < 1.5) {
-            p[3][4] = 1;
-        } else p[3][4] = 0;
+    int i;
+    
+    for(i = 0; i< 16;i++){
+        p[i] = -1;
     }
-    //And finally checking the sides
-    if ((*sp)[0] < 0.6 && (*sp)[15] < 0.6) {
-        p[1][2] = 1;
-        p[0][2] = -1;
-    } else {
-        p[1][2] = 0;
-        if ((*sp)[0] < 1.2 && (*sp)[15] < 1.2) {
-            p[0][2] = 1;
-        } else p[0][2] = 0;
-    }
-
-    if ((*sp)[6] < 0.6 && (*sp)[7] < 0.6) {
-        p[3][2] = 1;
-        p[4][2] = -1;
-    } else {
-        p[3][2] = 0;
-        if ((*sp)[6] < 1.2 && (*sp)[7] < 1.2) {
-            p[4][2] = 1;
-        } else p[4][2] = 0;
-    }
-
-    //Printing out sensors reading and proximity.
-    cout << *sp <<endl;
-    cout << p[0][0] << p[1][0] << p[2][0] << p[3][0] << p[4][0] <<endl;
-    cout << p[0][1] << p[1][1] << p[2][1] << p[3][1] << p[4][1] <<endl;
-    cout << p[0][2] << p[1][2] << "R" << p[3][2] << p[4][2] <<endl;
-    cout << p[0][3] << p[1][3] << p[2][3] << p[3][3] << p[4][3] <<endl;
-    cout << p[0][4] << p[1][4] << p[2][4] << p[3][4] << p[4][4] <<endl;		
+    
+    if((*sp)[3] < 0.6 && (*sp)[4] < 0.6){ p[0] = 1; goto next1;}
+    else p[0] = 0;
+    if((*sp)[3] < 1.2 && (*sp)[4] < 1.2){ p[1] = 1; goto next1;}
+    else p[1] = 0;
+    if((*sp)[3] < 1.8 && (*sp)[4] < 1.8){ p[2] = 1;  goto next1;}
+    else p[2] = 0;
+    if((*sp)[3] < 2.4 && (*sp)[4] < 2.4){ p[3] = 1;  goto next1;}
+    else p[3] = 0;
+    
+    next1:
+    
+    if((*sp)[6] < 0.6 && (*sp)[7] < 0.6){ p[4] = 1; goto next2;}
+    else p[4] = 0;
+    if((*sp)[6] < 1.2 && (*sp)[7] < 1.2){ p[5] = 1; goto next2;}
+    else p[5] = 0;
+    if((*sp)[6] < 1.8 && (*sp)[7] < 1.8){ p[6] = 1; goto next2;}
+    else p[6] = 0;
+    if((*sp)[6] < 2.4 && (*sp)[7] < 2.4){ p[7] = 1; goto next2;}
+    else p[7] = 0;
+    
+    next2:
+    
+    if((*sp)[11] < 0.6 && (*sp)[12] < 0.6){ p[8] = 1; goto next3;}
+    else p[8] = 0;
+    if((*sp)[11] < 1.2 && (*sp)[12] < 1.2){ p[9] = 1; goto next3;}
+    else p[9] = 0;
+    if((*sp)[11] < 1.8 && (*sp)[12] < 1.8){ p[10] = 1; goto next3;}
+    else p[10] = 0;
+    if((*sp)[11] < 2.4 && (*sp)[12] < 2.4){ p[11] = 1; goto next3;}
+    else p[11] = 0;
+    
+    next3:
+    
+    if((*sp)[0] < 0.6 && (*sp)[15] < 0.6){ p[12] = 1; return;}
+    else p[12] = 0;
+    if((*sp)[0] < 1.2 && (*sp)[15] < 1.2){ p[13] = 1; return;}
+    else p[13] = 0;
+    if((*sp)[0] < 1.8 && (*sp)[15] < 1.8){ p[14] = 1; return;}
+    else p[14] = 0;
+    if((*sp)[0] < 2.4 && (*sp)[15] < 2.4){ p[15] = 1; return;}
+    else p[15] = 0;
+    
 }
 
 /**
@@ -303,42 +224,56 @@ void Robot::applyProximityToGrid() {
     int x, y;
     switch (h) {
         case NORTH:
-            sX = gX - 2;
-            sY = gY - 2;
-            for (y = 0; y < 5; y++) {
-                for (x = 0; x < 5; x++) {
-                    if (p[x][y] != -1)
-                        grid[sX + x][sY + y] = p[x][y];
-                }
-            }
+            grid[gX][gY-1] = p[0]; grid[gX][gY-2] = p[1];
+            grid[gX][gY-3] = p[2]; grid[gX][gY-4] = p[3];
+            grid[gX+1][gY] = p[4]; grid[gX+2][gY] = p[5];
+            grid[gX+3][gY] = p[6]; grid[gX+4][gY] = p[7];
+            grid[gX][gY+1] = p[8]; grid[gX][gY+2] = p[9];
+            grid[gX][gY+3] = p[10]; grid[gX][gY+4] = p[11];
+            grid[gX-1][gY] = p[12]; grid[gX-2][gY] = p[13];
+            grid[gX-3][gY] = p[14]; grid[gX-4][gY] = p[15];
             break;
         case EAST:
-            sX = gX + 2;
-            sY = gY - 2;
-            for (y = 0; y < 5; y++) {
-                for (x = 0; x < 5; x++) {
-                    grid[sX - y][sY + x] = p[x][y];
-                }
-            }
-            break;
-        case WEST:
-            sX = gX - 2;
-            sY = gY + 2;
-            for (y = 0; y < 5; y++) {
-                for (x = 0; x < 5; x++) {
-                    grid[sX + y][sY - x] = p[x][y];
-                }
-            }
+            grid[gX+1][gY] = p[0]; grid[gX+2][gY] = p[1];
+            grid[gX+3][gY] = p[2]; grid[gX+4][gY] = p[3];
+            
+            grid[gX][gY+1] = p[4]; grid[gX][gY+2] = p[5];
+            grid[gX][gY+3] = p[6]; grid[gX][gY+4] = p[7];
+            
+            grid[gX-1][gY] = p[8]; grid[gX-2][gY] = p[9];
+            grid[gX-3][gY] = p[10]; grid[gX-4][gY] = p[11];
+            
+            grid[gX][gY-1] = p[12]; grid[gX][gY-2] = p[13];
+            grid[gX][gY-3] = p[14]; grid[gX][gY-4] = p[15];
             break;
         case SOUTH:
-            sX = gX + 2;
-            sY = gY + 2;
-            for (y = 0; y < 5; y++) {
-                for (x = 0; x < 5; x++) {
-                    grid[sX - x][sY - y] = p[x][y];
-                }
-            }
+            grid[gX][gY+1] = p[0]; grid[gX][gY+2] = p[1];
+            grid[gX][gY+3] = p[2]; grid[gX][gY+4] = p[3];
+            
+            grid[gX-1][gY] = p[4]; grid[gX-2][gY] = p[5];
+            grid[gX-3][gY] = p[6]; grid[gX-4][gY] = p[7];
+            
+            grid[gX][gY-1] = p[8]; grid[gX][gY-2] = p[9];
+            grid[gX][gY-3] = p[10]; grid[gX][gY-4] = p[11];
+            
+            grid[gX+1][gY] = p[12]; grid[gX+2][gY] = p[13];
+            grid[gX+3][gY] = p[14]; grid[gX+4][gY] = p[15];
             break;
+            
+        case WEST:
+            grid[gX-1][gY] = p[0]; grid[gX-2][gY] = p[1];
+            grid[gX-3][gY] = p[2]; grid[gX-4][gY] = p[3];
+            
+            grid[gX][gY-1] = p[4]; grid[gX][gY-2] = p[5];
+            grid[gX][gY-3] = p[6]; grid[gX][gY-4] = p[7];
+            
+            grid[gX+1][gY] = p[8]; grid[gX+4][gY] = p[9];
+            grid[gX+3][gY] = p[10]; grid[gX+4][gY] = p[11];
+            
+            grid[gX][gY+1] = p[12]; grid[gX][gY+2] = p[13];
+            grid[gX][gY+3] = p[14]; grid[gX][gY+4] = p[15];
+            break;
+      
 
     }
 }
@@ -361,7 +296,22 @@ void Robot::drawGrid() {
     int x = 0, y = 0;
     for (y; y < GRID_SIZE; y++) {
         for (x = 0; x < GRID_SIZE; x++) {
-            switch (grid[x][y]) {
+            if(x == gX && y == gY){
+                switch(h){
+                    case NORTH:
+                        cout << "^";
+                        break;
+                    case EAST:
+                        cout << ">";
+                        break;
+                    case SOUTH:
+                        cout << "V";
+                        break;
+                    case WEST:
+                        cout << "<";
+                }      
+            }
+            else switch (grid[x][y]) {
                 case -1:
                     cout << "X";
                     break;
@@ -371,9 +321,7 @@ void Robot::drawGrid() {
                 case 1:
                     cout << "#";
                     break;
-
-            }
-            //cout << grid[x][y] ;
+            }            
         }
         cout << endl;
     }

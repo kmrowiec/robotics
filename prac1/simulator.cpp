@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 	
 	//starts at the left bottom of the map
 	r.gX = 5;
-	r.gY = 27;
+	r.gY = 25;
 	
 	//r.moveToCell(NORTH);
 	//r.moveToCell(NORTH);
@@ -29,6 +29,7 @@ int main(int argc, char *argv[]){
 	//r.move(0.3);
 	//cout << r.sp[3] << r.sp[4] <<endl;
 	//cout << r.sp <<endl;
+        /*
 	sleep(1);
 	cout << "Current heading: "<< r.h << endl;
 	sleep(2);
@@ -40,16 +41,17 @@ int main(int argc, char *argv[]){
 	sleep(2);
 	r.changeHeading(EAST);
 	cout << "Current heading: "<< r.h << endl;
+	*/
+	//return 1;
 	
-	return 1;
 	
-	
-	r.h = NORTH;
+	//r.h = NORTH;
+        r.changeHeading(EAST);
 	r.checkProximity();
 	r.applyProximityToGrid();
 	
 	int i;
-	for(i =0; i<5; i++){
+	for(i =0; i<10; i++){
 		r.moveToCell(NORTH);
 		r.checkProximity();
 		r.applyProximityToGrid();		

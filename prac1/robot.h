@@ -30,7 +30,7 @@ const float ROTATE_TRESHOLD = 5;
 #endif
 
 enum Heading{
-    NORTH = 1,
+        NORTH = 1,
 	EAST = 2,
 	SOUTH = 3,
 	WEST = 4
@@ -44,13 +44,13 @@ class Robot{
 		
 	#ifdef ROBOT
 		SonarProxy* sp;
-    #else
+        #else
 		RangerProxy* sp;
-    #endif
+        #endif
 
 	Position2dProxy* pp;
 	int grid[GRID_SIZE][GRID_SIZE];
-	int p[5][5]; //proximity 
+	int p[16]; //proximity 
 	int gX, gY; //position on the grid
 	Heading h;
         
