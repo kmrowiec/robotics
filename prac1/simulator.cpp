@@ -48,25 +48,29 @@ int main(int argc, char *argv[]){
         r.h = EAST;
         
         Point s(5,25);
-        Point e(10, 25);
+        Point e(15, 25);
         vector<Point*> route = findRoute(s, e, &r);
-	int i = 0;
-        for(i; i< route.size(); i++){
-            r.moveToNearbyCell(*(route.at(i)));
-        }
-        
-        return 0;
+        r.exploreRoute(route);
+   
+        Point n(16,5);
+        vector<Point*> route2 = findRoute(e, n, &r);
+        r.exploreRoute(route2);
+//        
+//	int i = 0;
+//        for(i; i< route.size(); i++){
+//            r.moveToNearbyCell(*(route.at(i)));
+//        }
 	
-	//r.h = NORTH;
-        r.changeHeading(EAST);
-	r.checkProximity();
-	r.applyProximityToGrid();
-	
-	
-	for(i =0; i<10; i++){
-		r.moveToCell(NORTH);
-		r.checkProximity();
-		r.applyProximityToGrid();		
-	}
-	r.drawGrid();
+//	//r.h = NORTH;
+//        r.changeHeading(EAST);
+//	r.checkProximity();
+//	r.applyProximityToGrid();
+//	
+//	
+//	for(i =0; i<10; i++){
+//		r.moveToCell(NORTH);
+//		r.checkProximity();
+//		r.applyProximityToGrid();		
+//	}
+//	r.drawGrid();
 }

@@ -19,15 +19,14 @@ using namespace std;
 class TreeNode{
 public:
     TreeNode * root;
-    Point * content;
+    Point content;
     Heading robotHeadingAtNode;
-    vector<TreeNode*> children;
     
-    TreeNode(TreeNode * root, Point * content, Heading h);
+    TreeNode(TreeNode * root, Point content, Heading h);
     bool checkParents(TreeNode * start, Point p);
 };
 
-vector<Point*> getNeighbours(Point p);
+vector<Point> getNeighbours(Point p);
 vector<Point*> findRoute(Point start, Point end, Robot * robot);
 
 #endif	/* UTILS_H */

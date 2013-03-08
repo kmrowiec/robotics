@@ -15,6 +15,7 @@
 #include <iostream>
 #include <others.h>
 #include <string>
+#include <vector>
 #include <libplayerc++/playerc++.h>
 using namespace PlayerCc;    
 
@@ -55,6 +56,7 @@ class Robot{
         void rotate(int degrees);
         void moveToCell(Heading dest);
         void moveToNearbyCell(Point p);
+        void exploreRoute(std::vector<Point*> route);
         void move(double distance);
         void checkProximity();
         void applyProximityToGrid();

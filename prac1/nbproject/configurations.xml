@@ -15,6 +15,7 @@
                    projectFiles="true">
       <itemPath>robot.cpp</itemPath>
       <itemPath>simulator.cpp</itemPath>
+      <itemPath>utils.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

@@ -14,6 +14,7 @@ public:
     int y;
     
     Point(int x, int y);
+    Point();
 };
 
 

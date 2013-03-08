@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/robot.o \
+	${OBJECTDIR}/utils.o \
 	${OBJECTDIR}/simulator.o
 
 
@@ -67,6 +68,11 @@ ${OBJECTDIR}/robot.o: robot.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/robot.o robot.cpp
+
+${OBJECTDIR}/utils.o: utils.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/utils.o utils.cpp
 
 ${OBJECTDIR}/simulator.o: simulator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

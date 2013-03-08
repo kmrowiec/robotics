@@ -115,19 +115,24 @@ void Robot::rotate(int degrees) {
 
 void Robot::moveToCell(Heading dest) {
     switch (dest) {
-		case WEST:
-			move(0.6);
-			break;
-        case NORTH:
-            move(0.6);
-            //changing xy position on the grid
-            if (h == NORTH) gY--;
-            else if (h == EAST) gX++;
-            else if (h == WEST) gX--;
-            else gY++;
-            break; 
+        case WEST:
+            changeHeading(WEST);
+            break;
+        case SOUTH:
+            changeHeading(SOUTH);
+            break;
+        case EAST:
+            changeHeading(EAST);
+            break;
     }
-    
+    //if NORTH then we just move forward
+    //if not, we changed heading (i. e. rotated) first
+    move(0.6);
+    //changing xy position on the grid
+    if (h == NORTH) gY--;
+    else if (h == EAST) gX++;
+    else if (h == WEST) gX--;
+    else gY++;    
 }
 
 void Robot::moveToNearbyCell(Point p){
@@ -137,7 +142,44 @@ void Robot::moveToNearbyCell(Point p){
         else if(h==NORTH) moveToCell(EAST);
         else if(h==SOUTH) moveToCell(WEST);
         else moveToCell(SOUTH);
+    }else if(p.x == this->gX && p.y == this->gY+1){
+        //cell to the south
+        if(h==EAST) moveToCell(EAST);
+        else if(h==NORTH) moveToCell(SOUTH);
+        else if(h==SOUTH) moveToCell(NORTH);
+        else moveToCell(WEST);
+    }else if(p.x == this->gX-1 && p.y == this->gY){
+        //cell to the west
+        if(h==EAST) moveToCell(SOUTH);
+        else if(h==NORTH) moveToCell(WEST);
+        else if(h==SOUTH) moveToCell(EAST);
+        else moveToCell(NORTH);
+    }else if(p.x == this->gX && p.y == this->gY-1){
+        //cell to the north
+        if(h==EAST) moveToCell(WEST);
+        else if(h==NORTH) moveToCell(NORTH);
+        else if(h==SOUTH) moveToCell(SOUTH);
+        else moveToCell(EAST);
     }
+}
+
+void Robot::exploreRoute(vector<Point*> route){
+    checkProximity();
+    applyProximityToGrid();
+    if(route.empty()){
+        cout << "Route is null" << endl;
+        drawGrid();
+        return;
+    }
+    
+    int i;
+    for (i = 0; i < route.size(); i++) {
+        cout << "LOOP" << endl;
+        moveToNearbyCell(*(route.at(i)));
+        checkProximity();
+        applyProximityToGrid();
+    }
+    drawGrid();
 }
 
 void Robot::move(double distance) {
@@ -161,7 +203,7 @@ void Robot::move(double distance) {
         else pp->SetSpeed(0.2, 0);
 
     }
-
+    pp->SetSpeed(0, 0);
 }
 
 /**
@@ -230,8 +272,18 @@ void Robot::checkProximity() {
  * Applies the information about cells nearby to the occupancy grid. 
  */
 void Robot::applyProximityToGrid() {
-    int sX, sY;
-    int x, y;
+       
+    //Creating buffer map
+    int grid[GRID_SIZE][GRID_SIZE];
+    int x = 0, y = 0;
+    for (x; x < GRID_SIZE; x++) {
+        for (y = 0; y < GRID_SIZE; y++) {
+            if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
+            grid[x][y] = 1;    //map has a border
+            else grid[x][y] = -1;
+        }
+    }
+    
     switch (h) {
         case NORTH:
             grid[gX][gY-1] = p[0]; grid[gX][gY-2] = p[1];
@@ -246,46 +298,42 @@ void Robot::applyProximityToGrid() {
         case EAST:
             grid[gX+1][gY] = p[0]; grid[gX+2][gY] = p[1];
             grid[gX+3][gY] = p[2]; grid[gX+4][gY] = p[3];
-            
             grid[gX][gY+1] = p[4]; grid[gX][gY+2] = p[5];
-            grid[gX][gY+3] = p[6]; grid[gX][gY+4] = p[7];
-            
+            grid[gX][gY+3] = p[6]; grid[gX][gY+4] = p[7];           
             grid[gX-1][gY] = p[8]; grid[gX-2][gY] = p[9];
-            grid[gX-3][gY] = p[10]; grid[gX-4][gY] = p[11];
-            
+            grid[gX-3][gY] = p[10]; grid[gX-4][gY] = p[11];         
             grid[gX][gY-1] = p[12]; grid[gX][gY-2] = p[13];
             grid[gX][gY-3] = p[14]; grid[gX][gY-4] = p[15];
             break;
         case SOUTH:
             grid[gX][gY+1] = p[0]; grid[gX][gY+2] = p[1];
-            grid[gX][gY+3] = p[2]; grid[gX][gY+4] = p[3];
-            
+            grid[gX][gY+3] = p[2]; grid[gX][gY+4] = p[3];           
             grid[gX-1][gY] = p[4]; grid[gX-2][gY] = p[5];
-            grid[gX-3][gY] = p[6]; grid[gX-4][gY] = p[7];
-            
+            grid[gX-3][gY] = p[6]; grid[gX-4][gY] = p[7];       
             grid[gX][gY-1] = p[8]; grid[gX][gY-2] = p[9];
-            grid[gX][gY-3] = p[10]; grid[gX][gY-4] = p[11];
-            
+            grid[gX][gY-3] = p[10]; grid[gX][gY-4] = p[11];       
             grid[gX+1][gY] = p[12]; grid[gX+2][gY] = p[13];
             grid[gX+3][gY] = p[14]; grid[gX+4][gY] = p[15];
             break;
             
         case WEST:
             grid[gX-1][gY] = p[0]; grid[gX-2][gY] = p[1];
-            grid[gX-3][gY] = p[2]; grid[gX-4][gY] = p[3];
-            
+            grid[gX-3][gY] = p[2]; grid[gX-4][gY] = p[3];         
             grid[gX][gY-1] = p[4]; grid[gX][gY-2] = p[5];
-            grid[gX][gY-3] = p[6]; grid[gX][gY-4] = p[7];
-            
+            grid[gX][gY-3] = p[6]; grid[gX][gY-4] = p[7];           
             grid[gX+1][gY] = p[8]; grid[gX+4][gY] = p[9];
-            grid[gX+3][gY] = p[10]; grid[gX+4][gY] = p[11];
-            
+            grid[gX+3][gY] = p[10]; grid[gX+4][gY] = p[11];          
             grid[gX][gY+1] = p[12]; grid[gX][gY+2] = p[13];
             grid[gX][gY+3] = p[14]; grid[gX][gY+4] = p[15];
             break;
-      
-
     }
+    for (x = 0; x < GRID_SIZE; x++) {
+        for (y = 0; y < GRID_SIZE; y++) {
+            if(this->grid[x][y] == -1)
+                this->grid[x][y] = grid[x][y];
+        }
+    }
+    
 }
 
 /**
