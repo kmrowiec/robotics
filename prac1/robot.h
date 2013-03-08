@@ -13,6 +13,7 @@
 //#endif
     
 #include <iostream>
+#include <others.h>
 #include <string>
 #include <libplayerc++/playerc++.h>
 using namespace PlayerCc;    
@@ -29,12 +30,7 @@ const float ROTATE_SLOW_SPEED = 1;
 const float ROTATE_TRESHOLD = 5; 
 #endif
 
-enum Heading{
-        NORTH = 1,
-	EAST = 2,
-	SOUTH = 3,
-	WEST = 4
-};
+
 
 class Robot{
 	
@@ -58,6 +54,7 @@ class Robot{
         void changeHeading(Heading h);
         void rotate(int degrees);
         void moveToCell(Heading dest);
+        void moveToNearbyCell(Point p);
         void move(double distance);
         void checkProximity();
         void applyProximityToGrid();

@@ -12,18 +12,9 @@
 
 #include <vector>
 #include <robot.h>
+#include <others.h>
 
 using namespace std;
-
-
-class Point{
-public:
-    int x;
-    int y;
-    
-    Point(int x, int y);
-};
-
 
 class TreeNode{
 public:
@@ -37,7 +28,7 @@ public:
 };
 
 vector<Point*> getNeighbours(Point p);
-string findRoute(Point start, Point end, Robot * robot);
+vector<Point*> findRoute(Point start, Point end, Robot * robot);
 
 #endif	/* UTILS_H */
 

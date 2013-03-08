@@ -130,6 +130,16 @@ void Robot::moveToCell(Heading dest) {
     
 }
 
+void Robot::moveToNearbyCell(Point p){
+    //cell to the east
+    if(p.x == this->gX+1 && p.y == this->gY){ 
+        if(h==EAST) moveToCell(NORTH);
+        else if(h==NORTH) moveToCell(EAST);
+        else if(h==SOUTH) moveToCell(WEST);
+        else moveToCell(SOUTH);
+    }
+}
+
 void Robot::move(double distance) {
     client->Read();
     double iX, iY;

@@ -44,29 +44,32 @@ Heading getCellsHeading(Point p, Point q){
     return EAST;
 }
 
-string findRoute(Point start, Point end, Robot * robot){
+vector<Point*> findRoute(Point start, Point end, Robot * robot){
     
     TreeNode * treeRoot = new TreeNode(NULL, &start, robot->h);
     queue<TreeNode*> items;
     
     items.push(treeRoot);
     
-    vector<Point*> nbs; //neighbours
-    vector<TreeNode*> nbs_nodes;
+    //vector<Point*> nbs; //neighbours
+    //vector<TreeNode*> nbs_nodes;
     TreeNode * current;
     TreeNode * finish;
+    
     while(1){
+        
         if(items.front()->content->x == end.x && items.front()->content->y == end.y){
             finish = items.front();
             break;
         }
-        nbs.clear();
-        nbs_nodes.clear();
+        vector<Point*> nbs; //neighbours
+        vector<TreeNode*> nbs_nodes;
         current = items.front();
         items.pop();
         nbs = getNeighbours(*(current->content));
         int i;
         for(i = 0; i< nbs.size(); i++){
+            //if(robot->grid[nbs.at(i)->x][nbs.at(i)->y] == 0)
             nbs_nodes.push_back(new TreeNode(current, nbs.at(i), getCellsHeading(*(current->content),*(nbs.at(i)))));
         }
         //Adding all neighbours to items and to tree,
@@ -81,10 +84,31 @@ string findRoute(Point start, Point end, Robot * robot){
                 items.push(nbs_nodes.at(i));
         }
         
-    }
+    } 
     
     cout << "DONE!" << endl;
     
+    TreeNode * node = finish;
+//    while(node->root != NULL){
+//        cout << node->content->x << ", " << node->content->y << " -> " <<endl;
+//        node = node->root;
+//    }
+    
+    vector<Point*> path;
+    node = finish;
+    while(node->root != NULL){
+        path.push_back(new Point(node->content->x, node->content->y));
+        node = node->root;
+    }
+    
+    vector<Point*> correct_path;
+    int i;
+    for(i = path.size()-1; i >=0; i--){
+        correct_path.push_back(path.at(i));
+        cout << path.at(i)->x << ", " << path.at(i)->y << " -> " ;
+    }
+
+    return correct_path;
     
     
 }

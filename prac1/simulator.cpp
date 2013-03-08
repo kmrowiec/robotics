@@ -45,17 +45,24 @@ int main(int argc, char *argv[]){
 	*/
 	//return 1;
         
-        Point s(11,11);
-        Point e(11, 15);
-        findRoute(s, e, &r);
-	return 1;
+        r.h = EAST;
+        
+        Point s(5,25);
+        Point e(10, 25);
+        vector<Point*> route = findRoute(s, e, &r);
+	int i = 0;
+        for(i; i< route.size(); i++){
+            r.moveToNearbyCell(*(route.at(i)));
+        }
+        
+        return 0;
 	
 	//r.h = NORTH;
         r.changeHeading(EAST);
 	r.checkProximity();
 	r.applyProximityToGrid();
 	
-	int i;
+	
 	for(i =0; i<10; i++){
 		r.moveToCell(NORTH);
 		r.checkProximity();
