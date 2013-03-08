@@ -8,9 +8,9 @@
 #ifndef ROBOT_H
 #define	ROBOT_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+//#ifdef	__cplusplus
+//extern "C" {
+//#endif
     
 #include <iostream>
 #include <string>
@@ -66,9 +66,9 @@ class Robot{
         
 };
 
-#ifdef	__cplusplus
-}
-#endif
+//#ifdef	__cplusplus
+//}
+//#endif
 
 #endif	/* ROBOT_H */
 

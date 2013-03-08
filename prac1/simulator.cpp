@@ -2,6 +2,7 @@
 #include <string>
 #include <libplayerc++/playerc++.h>
 #include <robot.h>
+#include <utils.h>
 
 using namespace std;
 using namespace PlayerCc;
@@ -43,7 +44,11 @@ int main(int argc, char *argv[]){
 	cout << "Current heading: "<< r.h << endl;
 	*/
 	//return 1;
-	
+        
+        Point s(11,11);
+        Point e(11, 15);
+        findRoute(s, e, &r);
+	return 1;
 	
 	//r.h = NORTH;
         r.changeHeading(EAST);
