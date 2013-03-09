@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 	
 	//starts at the left bottom of the map
 	r.gX = 5;
-	r.gY = 25;
+	r.gY = 35;
 	
 	//r.moveToCell(NORTH);
 	//r.moveToCell(NORTH);
@@ -46,15 +46,18 @@ int main(int argc, char *argv[]){
 	//return 1;
         
         r.h = EAST;
-        
-        Point s(5,25);
-        Point e(15, 25);
-        vector<Point*> route = findRoute(s, e, &r);
-        r.exploreRoute(route);
-   
-        Point n(16,5);
-        vector<Point*> route2 = findRoute(e, n, &r);
-        r.exploreRoute(route2);
+        r.exploreWorld();
+//        Point p = findNearestUnexplored(&r);
+//        cout << "Unexplored : " << p.x << " " << p.y << endl;
+//        
+//        Point s(5,25);
+//        Point e(15, 25);
+//        vector<Point*> route = findRoute(s, e, &r);
+//        r.exploreRoute(route);
+//   
+//        Point n(16,5);
+//        vector<Point*> route2 = findRoute(e, n, &r);
+//        r.exploreRoute(route2);
 //        
 //	int i = 0;
 //        for(i; i< route.size(); i++){

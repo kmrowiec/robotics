@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>others.h</itemPath>
       <itemPath>robot.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"

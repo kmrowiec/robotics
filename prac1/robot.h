@@ -19,7 +19,7 @@
 #include <libplayerc++/playerc++.h>
 using namespace PlayerCc;    
 
-const int GRID_SIZE = 30;
+const int GRID_SIZE = 40;
 
 #ifdef ROBOT
 const float ROTATE_ERROR = 0.0015;
@@ -57,10 +57,12 @@ class Robot{
         void moveToCell(Heading dest);
         void moveToNearbyCell(Point p);
         void exploreRoute(std::vector<Point*> route);
+        void exploreWorld();
         void move(double distance);
         void checkProximity();
         void applyProximityToGrid();
         float calcAngularDistance(float a1, float a2);
+        Point getGridPosition();
         void drawGrid();
         
 };

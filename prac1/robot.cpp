@@ -3,6 +3,8 @@
 #include <libplayerc++/playerc++.h>
 #include <robot.h>
 
+#include "utils.h"
+
 using namespace PlayerCc;
 using namespace std;
 
@@ -180,6 +182,17 @@ void Robot::exploreRoute(vector<Point*> route){
         applyProximityToGrid();
     }
     drawGrid();
+}
+
+void Robot::exploreWorld(){
+    while(1){
+        Point p = findNearestUnexplored(this);
+        if(p.x == -1 && p.y == -1) break;
+        vector<Point*> route = findRoute(this->getGridPosition(), p, this);
+        this->exploreRoute(route);
+        this->drawGrid();
+    }
+    cout << "Map ready!" << endl;
 }
 
 void Robot::move(double distance) {
@@ -383,6 +396,10 @@ void Robot::drawGrid() {
         }
         cout << endl;
     }
+}
+
+Point Robot::getGridPosition(){
+    return Point(gX, gY);
 }
 
 
