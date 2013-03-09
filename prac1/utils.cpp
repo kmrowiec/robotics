@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -57,8 +58,9 @@ Heading getCellsHeading(Point p, Point q){
 vector<Point*> findRoute(Point start, Point end, Robot * robot){
     
     TreeNode * treeRoot = new TreeNode(NULL, start, robot->h);
-    queue<TreeNode*> items;
+    stack<TreeNode*> items;
     vector<Point> explored;
+    
     vector<Point*> correct_path;
     
     items.push(treeRoot);
@@ -69,10 +71,11 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
     TreeNode * current;
     TreeNode * finish = NULL;
     
+     //cout << "END point: " << end.x << " " << end.y <<endl;
+    
     while(!items.empty()){
-        
-        current = items.front();
-        items.pop();
+        //sleep(1);
+        current = items.top();
         
         //Checking if front of the queue is the target
         if(current->content.x == end.x && current->content.y == end.y){
@@ -83,13 +86,10 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
         vector<Point> nbs; //neighbours
         vector<TreeNode*> nbs_nodes;
         
-        
-        
         nbs = getNeighbours(current->content);
         
         int i;
         for(i = 0; i< nbs.size(); i++){
-            //if(robot->grid[nbs.at(i)->x][nbs.at(i)->y] == 0)
             int j; 
             bool contains = false;
             for(j = 0; j< explored.size(); j++){
@@ -98,23 +98,39 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
                 }
             }
             if(!contains){
+               //HERE NEEDS TO CHECK IF NOT OCCUPIED
+               if(robot->grid[nbs.at(i).x][nbs.at(i).y] != 1)
                nbs_nodes.push_back(new TreeNode(current, nbs.at(i), getCellsHeading(current->content,nbs.at(i))));
-            }
-            
+            } 
         }
         
-        //Adding all neighbours to items and to tree,
-        //in first order those that do not require turning
+        if(nbs_nodes.empty()) items.pop();
+        
+        vector<TreeNode*> children;
         for(i = 0; i< nbs_nodes.size(); i++){
             if(nbs_nodes.at(i)->robotHeadingAtNode == current->robotHeadingAtNode)
-                items.push(nbs_nodes.at(i));
+                children.push_back(nbs_nodes.at(i));
         }
         for(i = 0; i< nbs_nodes.size(); i++){
             if(nbs_nodes.at(i)->robotHeadingAtNode != current->robotHeadingAtNode)
-                items.push(nbs_nodes.at(i));
+                children.push_back(nbs_nodes.at(i));
+        }
+        TreeNode * closest;
+        int howClose = 9999;
+        for(i = 0; i< children.size(); i++){
+            int a = children.at(i)->content.x - end.x;
+            int b = children.at(i)->content.y - end.y;
+            int sum = (a<0 ? -a : a) + (b<0 ? -b : b);
+            if(sum < howClose){
+                howClose = sum;
+                closest = children.at(i);
+            }
         }
         
-        explored.push_back(Point(current->content.x, current->content.y));
+        items.push(closest);
+        cout << "Closest point: " << closest->content.x << " " << closest->content.y <<endl;
+        explored.push_back(Point(closest->content.x, closest->content.y));
+        
         
     } 
     
