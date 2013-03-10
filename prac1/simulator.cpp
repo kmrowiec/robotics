@@ -46,6 +46,12 @@ int main(int argc, char *argv[]){
 	//return 1;
         
         r.h = EAST;
+//        r.moveToCell(NORTH);
+//        r.moveToCell(WEST);
+//        r.moveToCell(WEST);
+//        r.moveToCell(WEST);
+//        r.rotate(90);
+        
         r.exploreWorld();
 //        Point p = findNearestUnexplored(&r);
 //        cout << "Unexplored : " << p.x << " " << p.y << endl;

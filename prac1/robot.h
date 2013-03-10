@@ -26,15 +26,18 @@ const float ROTATE_ERROR = 0.0015;
 const float ROTATE_SLOW_SPEED = 10; 
 const float ROTATE_TRESHOLD = 15; 
 #else
-const float ROTATE_ERROR = 0.2;
-const float ROTATE_SLOW_SPEED = 1; 
-const float ROTATE_TRESHOLD = 5; 
+const float ROTATE_ERROR = 0.1;
+const float ROTATE_SLOW_SPEED = 0.3; 
+const float ROTATE_TRESHOLD = 3; 
 #endif
 
-const float RANGE1 = 0.7;
-const float RANGE2 = 1.4;
-const float RANGE3 = 2.1;
-const float RANGE4 = 2.8;
+const float CELL_SIZE = 0.65;
+const float CELL_PADDING = 0.16;
+const float SIDE_DIFF = 0.07;
+const float RANGE1 = CELL_SIZE + CELL_PADDING;
+const float RANGE2 = 2*CELL_SIZE + CELL_PADDING;
+const float RANGE3 = 3*CELL_SIZE + CELL_PADDING;
+const float RANGE4 = 4*CELL_SIZE + CELL_PADDING;
 
 
 
@@ -51,7 +54,17 @@ class Robot{
         #endif
 
 	Position2dProxy* pp;
+        
+        /* Represents occupancy grid. Each element has a number that
+         * says how sure the robot is about the cell.
+         * 0 if completely unknown, negative numbers if cell is empty,
+         * and positive if occupied.
+         * After each measurement : 
+         * 0 if unknown, 5 or -5 if not so sure, 8 or -8 if pretty sure.
+         * We assume that cell is known if number is <-10 or >10.
+         */
 	int grid[GRID_SIZE][GRID_SIZE];
+        
 	int p[16]; //proximity 
 	int gX, gY; //position on the grid
 	Heading h;
