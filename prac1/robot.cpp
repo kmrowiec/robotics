@@ -129,7 +129,7 @@ void Robot::moveToCell(Heading dest) {
     }
     //if NORTH then we just move forward
     //if not, we changed heading (i. e. rotated) first
-    move(0.6);
+    move(RANGE1);
     //changing xy position on the grid
     if (h == NORTH) gY--;
     else if (h == EAST) gX++;
@@ -137,9 +137,10 @@ void Robot::moveToCell(Heading dest) {
     else gY++;    
 }
 
-void Robot::moveToNearbyCell(Point p){
+bool Robot::moveToNearbyCell(Point p){
+    if(grid[p.x][p.y] != 0) return false;
     //cell to the east
-    if(p.x == this->gX+1 && p.y == this->gY){ 
+    if(p.x == this->gX+1 && p.y == this->gY){
         if(h==EAST) moveToCell(NORTH);
         else if(h==NORTH) moveToCell(EAST);
         else if(h==SOUTH) moveToCell(WEST);
@@ -163,6 +164,7 @@ void Robot::moveToNearbyCell(Point p){
         else if(h==SOUTH) moveToCell(SOUTH);
         else moveToCell(EAST);
     }
+    return true;
 }
 
 void Robot::exploreRoute(vector<Point*> route){
@@ -176,8 +178,7 @@ void Robot::exploreRoute(vector<Point*> route){
     
     int i;
     for (i = 0; i < route.size(); i++) {
-        cout << "LOOP" << endl;
-        moveToNearbyCell(*(route.at(i)));
+        if(moveToNearbyCell(*(route.at(i))) == false) return;
         checkProximity();
         applyProximityToGrid();
     }
@@ -212,7 +213,7 @@ void Robot::move(double distance) {
 
         cDistance = sqrt(pow(cX - iX, 2) + pow(cY - iY, 2));
         if (cDistance - distance >= -0.005) break;
-        if (cDistance - distance >= -0.2) pp->SetSpeed(0.1, 0);
+        //if (cDistance - distance >= -0.2) pp->SetSpeed(0.1, 0);
         else pp->SetSpeed(0.2, 0);
 
     }
@@ -237,46 +238,52 @@ void Robot::checkProximity() {
         p[i] = -1;
     }
     
-    if((*sp)[3] < 0.6 && (*sp)[4] < 0.6){ p[0] = 1; goto next1;}
+    cout << "Sensors:" << endl;
+    cout << "Front: " << (*sp)[3] <<" "<<(*sp)[4]<<endl;
+    cout << "Right: " << (*sp)[7] <<" "<<(*sp)[8]<<endl;
+    cout << "Back: " << (*sp)[11] <<" "<<(*sp)[12]<<endl;
+    cout << "Left: " << (*sp)[0] <<" "<<(*sp)[15]<<endl;
+    
+    if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1){ p[0] = 1; goto next1;}
     else p[0] = 0;
-    if((*sp)[3] < 1.2 && (*sp)[4] < 1.2){ p[1] = 1; goto next1;}
+    if((*sp)[3] < RANGE2 || (*sp)[4] < RANGE2){ p[1] = 1; goto next1;}
     else p[1] = 0;
-    if((*sp)[3] < 1.8 && (*sp)[4] < 1.8){ p[2] = 1;  goto next1;}
+    if((*sp)[3] < RANGE3 || (*sp)[4] < RANGE3){ p[2] = 1;  goto next1;}
     else p[2] = 0;
-    if((*sp)[3] < 2.4 && (*sp)[4] < 2.4){ p[3] = 1;  goto next1;}
+    if((*sp)[3] < RANGE4 || (*sp)[4] < RANGE4){ p[3] = 1;  goto next1;}
     else p[3] = 0;
     
     next1:
     
-    if((*sp)[6] < 0.6 && (*sp)[7] < 0.6){ p[4] = 1; goto next2;}
+    if((*sp)[7] < RANGE1 || (*sp)[8] < RANGE1){ p[4] = 1; goto next2;}
     else p[4] = 0;
-    if((*sp)[6] < 1.2 && (*sp)[7] < 1.2){ p[5] = 1; goto next2;}
+    if((*sp)[7] < RANGE2 || (*sp)[8] < RANGE2){ p[5] = 1; goto next2;}
     else p[5] = 0;
-    if((*sp)[6] < 1.8 && (*sp)[7] < 1.8){ p[6] = 1; goto next2;}
+    if((*sp)[7] < RANGE3 || (*sp)[8] < RANGE3){ p[6] = 1; goto next2;}
     else p[6] = 0;
-    if((*sp)[6] < 2.4 && (*sp)[7] < 2.4){ p[7] = 1; goto next2;}
+    if((*sp)[7] < RANGE4 || (*sp)[8] < RANGE4){ p[7] = 1; goto next2;}
     else p[7] = 0;
     
     next2:
     
-    if((*sp)[11] < 0.6 && (*sp)[12] < 0.6){ p[8] = 1; goto next3;}
+    if((*sp)[11] < RANGE1 || (*sp)[12] < RANGE1){ p[8] = 1; goto next3;}
     else p[8] = 0;
-    if((*sp)[11] < 1.2 && (*sp)[12] < 1.2){ p[9] = 1; goto next3;}
+    if((*sp)[11] < RANGE2 || (*sp)[12] < RANGE2){ p[9] = 1; goto next3;}
     else p[9] = 0;
-    if((*sp)[11] < 1.8 && (*sp)[12] < 1.8){ p[10] = 1; goto next3;}
-    else p[10] = 0;
-    if((*sp)[11] < 2.4 && (*sp)[12] < 2.4){ p[11] = 1; goto next3;}
-    else p[11] = 0;
+//    if((*sp)[11] < 1.8 || (*sp)[12] < 1.8){ p[10] = 1; goto next3;}
+//    else p[10] = 0;
+//    if((*sp)[11] < 2.4 || (*sp)[12] < 2.4){ p[11] = 1; goto next3;}
+//    else p[11] = 0;
     
     next3:
     
-    if((*sp)[0] < 0.6 && (*sp)[15] < 0.6){ p[12] = 1; return;}
+    if((*sp)[0] < RANGE1 || (*sp)[15] < RANGE1){ p[12] = 1; return;}
     else p[12] = 0;
-    if((*sp)[0] < 1.2 && (*sp)[15] < 1.2){ p[13] = 1; return;}
+    if((*sp)[0] < RANGE2 || (*sp)[15] < RANGE2){ p[13] = 1; return;}
     else p[13] = 0;
-    if((*sp)[0] < 1.8 && (*sp)[15] < 1.8){ p[14] = 1; return;}
+    if((*sp)[0] < RANGE3 || (*sp)[15] < RANGE3){ p[14] = 1; return;}
     else p[14] = 0;
-    if((*sp)[0] < 2.4 && (*sp)[15] < 2.4){ p[15] = 1; return;}
+    if((*sp)[0] < RANGE4 || (*sp)[15] < RANGE4){ p[15] = 1; return;}
     else p[15] = 0;
     
 }
@@ -342,7 +349,7 @@ void Robot::applyProximityToGrid() {
     }
     for (x = 0; x < GRID_SIZE; x++) {
         for (y = 0; y < GRID_SIZE; y++) {
-            if(this->grid[x][y] == -1)
+            if(grid[x][y] != -1)
                 this->grid[x][y] = grid[x][y];
         }
     }

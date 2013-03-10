@@ -99,7 +99,7 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
             }
             if(!contains){
                //HERE NEEDS TO CHECK IF NOT OCCUPIED
-               if(robot->grid[nbs.at(i).x][nbs.at(i).y] != 1)
+               if(robot->grid[nbs.at(i).x][nbs.at(i).y] == 0)
                nbs_nodes.push_back(new TreeNode(current, nbs.at(i), getCellsHeading(current->content,nbs.at(i))));
             } 
         }
@@ -128,7 +128,7 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
         }
         
         items.push(closest);
-        cout << "Closest point: " << closest->content.x << " " << closest->content.y <<endl;
+        //cout << "Closest point: " << closest->content.x << " " << closest->content.y <<endl;
         explored.push_back(Point(closest->content.x, closest->content.y));
         
         
@@ -177,6 +177,7 @@ Point findNearestUnexplored(Robot * r){
     while(!items.empty()){
         current = &items.front();
         
+        //Checking if the cell is near unexplored cell
         if(r->grid[current->x][current->y-1] == -1 ||
            r->grid[current->x][current->y+1] == -1 ||
            r->grid[current->x-1][current->y] == -1 ||
@@ -186,12 +187,12 @@ Point findNearestUnexplored(Robot * r){
         if(children.empty()) continue;
         int i;
         int j;
-        try{
+        
         for(i = 0; i<children.size(); i++){
             
             bool contains = false;
             
-            for(j = 0; i<explored.size(); j++){
+            for(j = 0; j<explored.size(); j++){
                 if(explored.at(j).x == children.at(i).x && 
                         explored.at(j).y == children.at(i).y){
                     contains = true; 
@@ -200,21 +201,14 @@ Point findNearestUnexplored(Robot * r){
             }
             
             if (!contains) {
-                if (r->grid[children.at(i).x][children.at(i).y] != 1) {
+                if (r->grid[children.at(i).x][children.at(i).y] == 0) {
                     items.push(children.at(i));
                     explored.push_back(children.at(i));
                 }
 
             }
         }
-        }
-        catch(std::out_of_range){
-            cout<< " caught vector out of range " << endl;
-            cout<< " i : " << i << endl;
-            cout<< " j : " << j << endl;
-            cout<< children.at(i).x << endl;
-            cout<< explored.at(j).x << endl;
-        }
+       
         items.pop();
     }
     return Point(-1,-1); //When no such cell is found.

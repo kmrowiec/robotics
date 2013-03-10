@@ -31,6 +31,11 @@ const float ROTATE_SLOW_SPEED = 1;
 const float ROTATE_TRESHOLD = 5; 
 #endif
 
+const float RANGE1 = 0.7;
+const float RANGE2 = 1.4;
+const float RANGE3 = 2.1;
+const float RANGE4 = 2.8;
+
 
 
 class Robot{
@@ -55,7 +60,7 @@ class Robot{
         void changeHeading(Heading h);
         void rotate(int degrees);
         void moveToCell(Heading dest);
-        void moveToNearbyCell(Point p);
+        bool moveToNearbyCell(Point p);
         void exploreRoute(std::vector<Point*> route);
         void exploreWorld();
         void move(double distance);
