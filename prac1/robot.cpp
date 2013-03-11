@@ -24,8 +24,8 @@ Robot::Robot(string cl) {
     for (x; x < GRID_SIZE; x++) {
         for (y = 0; y < GRID_SIZE; y++) {
             if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
-            grid[x][y] = 1;    //map has a border
-            else grid[x][y] = -1;
+            grid[x][y] = OCC0;    //map has a border
+            else grid[x][y] = 0; //unknown terrain
         }
     }
 }
@@ -138,7 +138,7 @@ void Robot::moveToCell(Heading dest) {
 }
 
 bool Robot::moveToNearbyCell(Point p){
-    if(grid[p.x][p.y] != 0) return false;
+    if(grid[p.x][p.y] > -20) return false;
     //cell to the east
     if(p.x == this->gX+1 && p.y == this->gY){
         if(h==EAST) moveToCell(NORTH);
@@ -171,7 +171,7 @@ void Robot::exploreRoute(vector<Point*> route){
     checkProximity();
     applyProximityToGrid();
     if(route.empty()){
-        cout << "Route is null" << endl;
+        cout << "Route is empty" << endl;
         drawGrid();
         return;
     }
@@ -187,6 +187,8 @@ void Robot::exploreRoute(vector<Point*> route){
 void Robot::exploreWorld(){
     while(1){
         Point p = findNearestUnexplored(this);
+        cout << "Nearest unexplored point: " << p.x << " " << p.y <<endl;
+        cout << "Grid repres. : " << grid[p.x][p.y] << endl;
         if(p.x == -1 && p.y == -1) break;
         vector<Point*> route = findRoute(this->getGridPosition(), p, this);
         this->exploreRoute(route);
@@ -234,7 +236,7 @@ void Robot::checkProximity() {
     int i; 
     
     for(i = 0; i< 16;i++){
-        p[i] = -1;
+        p[i] = 0;
     }
     
     cout << "Sensors:" << endl;
@@ -249,59 +251,59 @@ void Robot::checkProximity() {
     //Checking front
     if(wallNearby){
         //If robot is close to the wall, only first cell is checked
-        if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1){ p[0] = 1; goto next1;}
-        else p[0] = 0;
+        if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1){ p[0] += OCC1; goto next1;}
+        else p[0] += FREE1;
     }else{
-        if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1){ p[0] = 1; goto next1;}
-        else p[0] = 0;
-        if((*sp)[3] < RANGE2 || (*sp)[4] < RANGE2){ p[1] = 1; goto next1;}
-        else p[1] = 0;
-        if((*sp)[3] < RANGE3 || (*sp)[4] < RANGE3){ p[2] = 1;  goto next1;}
-        else p[2] = 0;
-        if((*sp)[3] < RANGE4 || (*sp)[4] < RANGE4){ p[3] = 1;  goto next1;}
-        else p[3] = 0;
+        if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1){ p[0] += OCC1; goto next1;}
+        else p[0] += FREE1;
+        if((*sp)[3] < RANGE2 || (*sp)[4] < RANGE2){ p[1] += OCC2; goto next1;}
+        else p[1] += FREE2;
+        if((*sp)[3] < RANGE3 || (*sp)[4] < RANGE3){ p[2] += OCC3;  goto next1;}
+        else p[2] += FREE3;
+        if((*sp)[3] < RANGE4 || (*sp)[4] < RANGE4){ p[3] += OCC4;  goto next1;}
+        else p[3] += FREE4;
     }
     
     
     next1:
     //Checking right side
-    if((*sp)[7] < RANGE1+SIDE_DIFF || (*sp)[8] < RANGE1+SIDE_DIFF){ p[4] = 1; goto next2;}
-    else p[4] = 0;
-    if((*sp)[7] < RANGE2+SIDE_DIFF || (*sp)[8] < RANGE2+SIDE_DIFF){ p[5] = 1; goto next2;}
-    else p[5] = 0;
-    if((*sp)[7] < RANGE3+SIDE_DIFF || (*sp)[8] < RANGE3+SIDE_DIFF){ p[6] = 1; goto next2;}
-    else p[6] = 0;
-    if((*sp)[7] < RANGE4+SIDE_DIFF || (*sp)[8] < RANGE4+SIDE_DIFF){ p[7] = 1; goto next2;}
-    else p[7] = 0;
+    if((*sp)[7] < RANGE1+SIDE_DIFF || (*sp)[8] < RANGE1+SIDE_DIFF){ p[4] += OCC1; goto next2;}
+    else p[4] += FREE1;
+    if((*sp)[7] < RANGE2+SIDE_DIFF || (*sp)[8] < RANGE2+SIDE_DIFF){ p[5] += OCC2; goto next2;}
+    else p[5] += FREE2;
+    if((*sp)[7] < RANGE3+SIDE_DIFF || (*sp)[8] < RANGE3+SIDE_DIFF){ p[6] += OCC3; goto next2;}
+    else p[6] += FREE3;
+    if((*sp)[7] < RANGE4+SIDE_DIFF || (*sp)[8] < RANGE4+SIDE_DIFF){ p[7] += OCC4; goto next2;}
+    else p[7] += FREE4;
     
     next2:
     //Checking back side
     
     if(wallNearby){
-        if((*sp)[11] < RANGE1 || (*sp)[12] < RANGE1){ p[8] = 1; goto next3;}
-        else p[8] = 0;
+        if((*sp)[11] < RANGE1 || (*sp)[12] < RANGE1){ p[8] += OCC1; goto next3;}
+        else p[8] += FREE1;
     }else{
-        if((*sp)[11] < RANGE1 || (*sp)[12] < RANGE1){ p[8] = 1; goto next3;}
-        else p[8] = 0;
-        if((*sp)[11] < RANGE2 || (*sp)[12] < RANGE2){ p[9] = 1; goto next3;}
-        else p[9] = 0;
-        if((*sp)[11] < 1.8 || (*sp)[12] < 1.8){ p[10] = 1; goto next3;}
-        else p[10] = 0;
-        if((*sp)[11] < 2.4 || (*sp)[12] < 2.4){ p[11] = 1; goto next3;}
-        else p[11] = 0;
+        if((*sp)[11] < RANGE1 || (*sp)[12] < RANGE1){ p[8] += OCC1; goto next3;}
+        else p[8] += FREE1;
+        if((*sp)[11] < RANGE2 || (*sp)[12] < RANGE2){ p[9] += OCC2; goto next3;}
+        else p[9] += FREE2;
+        if((*sp)[11] < 1.8 || (*sp)[12] < 1.8){ p[10] += OCC3; goto next3;}
+        else p[10] += FREE3;
+        if((*sp)[11] < 2.4 || (*sp)[12] < 2.4){ p[11] += OCC4; goto next3;}
+        else p[11] += FREE4;
     }
     
     
     next3:
     //Checking left side
-    if((*sp)[0] < RANGE1+SIDE_DIFF || (*sp)[15] < RANGE1+SIDE_DIFF){ p[12] = 1; return;}
-    else p[12] = 0;
-    if((*sp)[0] < RANGE2+SIDE_DIFF || (*sp)[15] < RANGE2+SIDE_DIFF){ p[13] = 1; return;}
-    else p[13] = 0;
-    if((*sp)[0] < RANGE3+SIDE_DIFF || (*sp)[15] < RANGE3+SIDE_DIFF){ p[14] = 1; return;}
-    else p[14] = 0;
-    if((*sp)[0] < RANGE4+SIDE_DIFF || (*sp)[15] < RANGE4+SIDE_DIFF){ p[15] = 1; return;}
-    else p[15] = 0;
+    if((*sp)[0] < RANGE1+SIDE_DIFF || (*sp)[15] < RANGE1+SIDE_DIFF){ p[12] += OCC1; return;}
+    else p[12] += FREE1;
+    if((*sp)[0] < RANGE2+SIDE_DIFF || (*sp)[15] < RANGE2+SIDE_DIFF){ p[13] += OCC2; return;}
+    else p[13] += FREE2;
+    if((*sp)[0] < RANGE3+SIDE_DIFF || (*sp)[15] < RANGE3+SIDE_DIFF){ p[14] += OCC3; return;}
+    else p[14] += FREE3;
+    if((*sp)[0] < RANGE4+SIDE_DIFF || (*sp)[15] < RANGE4+SIDE_DIFF){ p[15] += OCC4; return;}
+    else p[15] += FREE4;
     
 }
 
@@ -311,65 +313,73 @@ void Robot::checkProximity() {
 void Robot::applyProximityToGrid() {
        
     //Creating buffer map
-    int grid[GRID_SIZE][GRID_SIZE];
-    int x = 0, y = 0;
-    for (x; x < GRID_SIZE; x++) {
-        for (y = 0; y < GRID_SIZE; y++) {
-            if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
-            grid[x][y] = 1;    //map has a border
-            else grid[x][y] = -1;
-        }
-    }
-    
+//    int grid[GRID_SIZE][GRID_SIZE];
+//    int x = 0, y = 0;
+//    for (x; x < GRID_SIZE; x++) {
+//        for (y = 0; y < GRID_SIZE; y++) {
+//            if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
+//            grid[x][y] = OCC0;    //map has a border
+//            else grid[x][y] = 0;
+//        }
+//    }
+     int i = 0;
+     for(i = 0; i< 16;i++){
+        cout << p[i]<< " ";
+     }
+     
+     grid[gX][gY] += FREE0; //where robot actually is, obviously the cell is free for sure
+     
     switch (h) {
         case NORTH:
-            grid[gX][gY-1] = p[0]; grid[gX][gY-2] = p[1];
-            grid[gX][gY-3] = p[2]; grid[gX][gY-4] = p[3];
-            grid[gX+1][gY] = p[4]; grid[gX+2][gY] = p[5];
-            grid[gX+3][gY] = p[6]; grid[gX+4][gY] = p[7];
-            grid[gX][gY+1] = p[8]; grid[gX][gY+2] = p[9];
-            grid[gX][gY+3] = p[10]; grid[gX][gY+4] = p[11];
-            grid[gX-1][gY] = p[12]; grid[gX-2][gY] = p[13];
-            grid[gX-3][gY] = p[14]; grid[gX-4][gY] = p[15];
+            grid[gX][gY-1] += p[0]; grid[gX][gY-2] += p[1];
+            grid[gX][gY-3] += p[2]; grid[gX][gY-4] += p[3];
+            grid[gX+1][gY] += p[4]; grid[gX+2][gY] += p[5];
+            grid[gX+3][gY] += p[6]; grid[gX+4][gY] += p[7];
+            grid[gX][gY+1] += p[8]; grid[gX][gY+2] += p[9];
+            grid[gX][gY+3] += p[10]; grid[gX][gY+4] += p[11];
+            grid[gX-1][gY] += p[12]; grid[gX-2][gY] += p[13];
+            grid[gX-3][gY] += p[14]; grid[gX-4][gY] += p[15];
             break;
         case EAST:
-            grid[gX+1][gY] = p[0]; grid[gX+2][gY] = p[1];
-            grid[gX+3][gY] = p[2]; grid[gX+4][gY] = p[3];
-            grid[gX][gY+1] = p[4]; grid[gX][gY+2] = p[5];
-            grid[gX][gY+3] = p[6]; grid[gX][gY+4] = p[7];           
-            grid[gX-1][gY] = p[8]; grid[gX-2][gY] = p[9];
-            grid[gX-3][gY] = p[10]; grid[gX-4][gY] = p[11];         
-            grid[gX][gY-1] = p[12]; grid[gX][gY-2] = p[13];
-            grid[gX][gY-3] = p[14]; grid[gX][gY-4] = p[15];
+            grid[gX+1][gY] += p[0]; grid[gX+2][gY] += p[1];
+            grid[gX+3][gY] += p[2]; grid[gX+4][gY] += p[3];
+            grid[gX][gY+1] += p[4]; grid[gX][gY+2] += p[5];
+            grid[gX][gY+3] += p[6]; grid[gX][gY+4] += p[7];           
+            grid[gX-1][gY] += p[8]; grid[gX-2][gY] += p[9];
+            grid[gX-3][gY] += p[10]; grid[gX-4][gY] += p[11];         
+            grid[gX][gY-1] += p[12]; grid[gX][gY-2] += p[13];
+            grid[gX][gY-3] += p[14]; grid[gX][gY-4] += p[15];
             break;
         case SOUTH:
-            grid[gX][gY+1] = p[0]; grid[gX][gY+2] = p[1];
-            grid[gX][gY+3] = p[2]; grid[gX][gY+4] = p[3];           
-            grid[gX-1][gY] = p[4]; grid[gX-2][gY] = p[5];
-            grid[gX-3][gY] = p[6]; grid[gX-4][gY] = p[7];       
-            grid[gX][gY-1] = p[8]; grid[gX][gY-2] = p[9];
-            grid[gX][gY-3] = p[10]; grid[gX][gY-4] = p[11];       
-            grid[gX+1][gY] = p[12]; grid[gX+2][gY] = p[13];
-            grid[gX+3][gY] = p[14]; grid[gX+4][gY] = p[15];
+            grid[gX][gY+1] += p[0]; grid[gX][gY+2] += p[1];
+            grid[gX][gY+3] += p[2]; grid[gX][gY+4] += p[3];           
+            grid[gX-1][gY] += p[4]; grid[gX-2][gY] += p[5];
+            grid[gX-3][gY] += p[6]; grid[gX-4][gY] += p[7];       
+            grid[gX][gY-1] += p[8]; grid[gX][gY-2] += p[9];
+            grid[gX][gY-3] += p[10]; grid[gX][gY-4] += p[11];       
+            grid[gX+1][gY] += p[12]; grid[gX+2][gY] += p[13];
+            grid[gX+3][gY] += p[14]; grid[gX+4][gY] += p[15];
             break;
             
         case WEST:
-            grid[gX-1][gY] = p[0]; grid[gX-2][gY] = p[1];
-            grid[gX-3][gY] = p[2]; grid[gX-4][gY] = p[3];         
-            grid[gX][gY-1] = p[4]; grid[gX][gY-2] = p[5];
-            grid[gX][gY-3] = p[6]; grid[gX][gY-4] = p[7];           
-            grid[gX+1][gY] = p[8]; grid[gX+4][gY] = p[9];
-            grid[gX+3][gY] = p[10]; grid[gX+4][gY] = p[11];          
-            grid[gX][gY+1] = p[12]; grid[gX][gY+2] = p[13];
-            grid[gX][gY+3] = p[14]; grid[gX][gY+4] = p[15];
+            grid[gX-1][gY] += p[0]; grid[gX-2][gY] += p[1];
+            grid[gX-3][gY] += p[2]; grid[gX-4][gY] += p[3];         
+            grid[gX][gY-1] += p[4]; grid[gX][gY-2] += p[5];
+            grid[gX][gY-3] += p[6]; grid[gX][gY-4] += p[7];           
+            grid[gX+1][gY] += p[8]; grid[gX+4][gY] += p[9];
+            grid[gX+3][gY] += p[10]; grid[gX+4][gY] += p[11];          
+            grid[gX][gY+1] += p[12]; grid[gX][gY+2] += p[13];
+            grid[gX][gY+3] += p[14]; grid[gX][gY+4] += p[15];
             break;
     }
-    for (x = 0; x < GRID_SIZE; x++) {
-        for (y = 0; y < GRID_SIZE; y++) {
-            if(grid[x][y] != -1)
-                this->grid[x][y] = grid[x][y];
-        }
-    }
+//    int x, y;
+//    cout << endl;
+//    for (x = 0; x < GRID_SIZE; x++) {
+//        for (y = 0; y < GRID_SIZE; y++) {        
+//                cout << this->grid[x][y];
+//        }
+//       cout << endl;
+//    } 
     
 }
 
@@ -406,17 +416,11 @@ void Robot::drawGrid() {
                         cout << "<";
                 }      
             }
-            else switch (grid[x][y]) {
-                case -1:
-                    cout << "X";
-                    break;
-                case 0:
-                    cout << " ";
-                    break;
-                case 1:
-                    cout << "#";
-                    break;
-            }            
+            else{
+                if(grid[x][y] > 20) cout << "#";
+                else if(grid[x][y] < -20) cout <<" ";
+                else cout << "?";
+            }              
         }
         cout << endl;
     }

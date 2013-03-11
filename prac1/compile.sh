@@ -1,2 +1,3 @@
-g++ -o simulator `pkg-config --cflags playerc++` -I . robot.cpp simulator.cpp utils.cpp `pkg-config --libs playerc++`
+#g++ -o simulator `pkg-config --cflags playerc++` -I . robot.cpp simulator.cpp utils.cpp grid_display.cpp `pkg-config --libs playerc++ allegro-5.0 allegro_primitives-5.0`
 
+g++ -o simulator `pkg-config --cflags playerc++` -I . robot.cpp simulator.cpp utils.cpp `pkg-config --libs playerc++`

@@ -31,15 +31,25 @@ const float ROTATE_SLOW_SPEED = 0.3;
 const float ROTATE_TRESHOLD = 3; 
 #endif
 
-const float CELL_SIZE = 0.65;
+const float CELL_SIZE = 0.6;
 const float CELL_PADDING = 0.16;
-const float SIDE_DIFF = 0.07;
+const float SIDE_DIFF = 0.08;
 const float RANGE1 = CELL_SIZE + CELL_PADDING;
 const float RANGE2 = 2*CELL_SIZE + CELL_PADDING;
 const float RANGE3 = 3*CELL_SIZE + CELL_PADDING;
 const float RANGE4 = 4*CELL_SIZE + CELL_PADDING;
 
-
+//Levels of certainty
+const int FREE0 = -1000;
+const int FREE1 = -50;
+const int FREE2 = -25;
+const int FREE3 = -12;
+const int FREE4 = -6;
+const int OCC0 = 100000;
+const int OCC1 = 50;
+const int OCC2 = 25;
+const int OCC3 = 12;
+const int OCC4 = 6;
 
 class Robot{
 	

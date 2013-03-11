@@ -99,7 +99,7 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
             }
             if(!contains){
                //HERE NEEDS TO CHECK IF NOT OCCUPIED
-               if(robot->grid[nbs.at(i).x][nbs.at(i).y] == 0)
+               if(robot->grid[nbs.at(i).x][nbs.at(i).y] < -20)
                nbs_nodes.push_back(new TreeNode(current, nbs.at(i), getCellsHeading(current->content,nbs.at(i))));
             } 
         }
@@ -175,13 +175,13 @@ Point findNearestUnexplored(Robot * r){
     
     items.push(start);
     while(!items.empty()){
-        current = &items.front();
+        current = &items.front(); 
         
         //Checking if the cell is near unexplored cell
-        if(r->grid[current->x][current->y-1] == -1 ||
-           r->grid[current->x][current->y+1] == -1 ||
-           r->grid[current->x-1][current->y] == -1 ||
-           r->grid[current->x+1][current->y] == -1 ) return *current;
+        if((-20 <= r->grid[current->x][current->y-1] && r->grid[current->x][current->y-1]<= 20 )||
+           (-20 <= r->grid[current->x][current->y+1] && r->grid[current->x][current->y+1]<= 20 )||
+           (-20 <= r->grid[current->x-1][current->y] && r->grid[current->x-1][current->y]<= 20 )||
+           (-20 <= r->grid[current->x+1][current->y] && r->grid[current->x+1][current->y]<= 20 )) return *current;
         
         vector<Point> children = getNeighbours(*current);
         if(children.empty()) continue;
@@ -201,7 +201,7 @@ Point findNearestUnexplored(Robot * r){
             }
             
             if (!contains) {
-                if (r->grid[children.at(i).x][children.at(i).y] == 0) {
+                if (r->grid[children.at(i).x][children.at(i).y] < -20) {
                     items.push(children.at(i));
                     explored.push_back(children.at(i));
                 }

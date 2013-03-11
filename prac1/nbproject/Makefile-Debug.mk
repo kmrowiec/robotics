@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/grid_display.o \
 	${OBJECTDIR}/robot.o \
 	${OBJECTDIR}/utils.o \
 	${OBJECTDIR}/simulator.o
@@ -63,6 +64,11 @@ LDLIBSOPTIONS=-L/usr/local/include/player-3.1 `pkg-config --libs playerc++`
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/prac1: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} `pkg-config --libs playerc++ ` -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/prac1 ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/grid_display.o: grid_display.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g `pkg-config --cflags playerc++`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/grid_display.o grid_display.cpp
 
 ${OBJECTDIR}/robot.o: robot.cpp 
 	${MKDIR} -p ${OBJECTDIR}

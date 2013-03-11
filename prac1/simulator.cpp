@@ -1,4 +1,6 @@
 #include <iostream>
+
+#include <iostream>
 #include <string>
 #include <libplayerc++/playerc++.h>
 #include <robot.h>
@@ -7,6 +9,7 @@
 using namespace std;
 using namespace PlayerCc;
 
+
 int main(int argc, char *argv[]){
 
 	#ifdef ROBOT
@@ -14,14 +17,15 @@ int main(int argc, char *argv[]){
 	#else
 		Robot r("localhost");
 	#endif	
-		
-		
+	
+	
 	r.client->Read();
 	sleep(1);
 	
 	//starts at the left bottom of the map
 	r.gX = 5;
 	r.gY = 35;
+        
 	
 	//r.moveToCell(NORTH);
 	//r.moveToCell(NORTH);
@@ -44,6 +48,8 @@ int main(int argc, char *argv[]){
 	cout << "Current heading: "<< r.h << endl;
 	*/
 	//return 1;
+        
+        
         
         r.h = EAST;
 //        r.moveToCell(NORTH);
