@@ -2,6 +2,7 @@
 #include <string>
 #include <libplayerc++/playerc++.h>
 #include <robot.h>
+#include <vector>
 
 #include "utils.h"
 
@@ -99,8 +100,9 @@ void Robot::rotate(int degrees) {
             pp->SetSpeed(0,dtor(speed));
             usleep(700000);
 	    //id(degrees== 180 || degrees == -180) usleep(700000);
-	    #endif
-	    pp->SetSpeed(0, dtor(0));
+			pp->SetSpeed(0, dtor(0));
+			#endif
+	    
             return;
         }
 
@@ -198,6 +200,36 @@ void Robot::exploreWorld(){
     }
     cout << "Map ready!" << endl;
 }
+
+vector<Point> Robot::findHidingSpots(){
+	vector<Point> best_hideouts;
+	vector<Point> good_hideouts;
+	
+	int x = 0, y = 0;
+	int n;
+    for (y = 4; y < GRID_SIZE - 5; y++) {
+        for (x = 4; x < GRID_SIZE - 5; x++) {
+            if(grid[x][y] < -20){ // if the cell is not occupied
+				n = 0;
+				
+				//checking how many walls are adjacent to the cell
+				if(grid[x][y-1] > 20) n++;
+				if(grid[x][y+1] > 20) n++;
+				if(grid[x-1][y] > 20) n++;
+				if(grid[x+1][y] > 20) n++;
+				
+				if(n>2){ //if three walls around
+					best_hideouts.push_back(Point(x,y));
+				}else if(n>1){
+					good_hideouts.push_back(Point(x,y));
+				}
+			}             
+        }
+    }
+    
+    return best_hideouts.empty() ? good_hideouts : best_hideouts;
+}
+	
 
 void Robot::move(double distance) {
     client->Read();
@@ -322,16 +354,6 @@ void Robot::checkProximity() {
  */
 void Robot::applyProximityToGrid() {
        
-    //Creating buffer map
-//    int grid[GRID_SIZE][GRID_SIZE];
-//    int x = 0, y = 0;
-//    for (x; x < GRID_SIZE; x++) {
-//        for (y = 0; y < GRID_SIZE; y++) {
-//            if(x < 4 || x > GRID_SIZE-5 || y < 4 || y > GRID_SIZE-5)
-//            grid[x][y] = OCC0;    //map has a border
-//            else grid[x][y] = 0;
-//        }
-//    }
      int i = 0;
      for(i = 0; i< 16;i++){
         cout << p[i]<< " ";
@@ -382,14 +404,6 @@ void Robot::applyProximityToGrid() {
             grid[gX][gY+3] += p[14]; grid[gX][gY+4] += p[15];
             break;
     }
-//    int x, y;
-//    cout << endl;
-//    for (x = 0; x < GRID_SIZE; x++) {
-//        for (y = 0; y < GRID_SIZE; y++) {        
-//                cout << this->grid[x][y];
-//        }
-//       cout << endl;
-//    } 
     
 }
 

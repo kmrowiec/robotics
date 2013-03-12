@@ -19,21 +19,23 @@
 #include <libplayerc++/playerc++.h>
 using namespace PlayerCc;    
 
-const int GRID_SIZE = 15;
+const int GRID_SIZE = 40;
 
 #ifdef ROBOT
 const float ROTATE_ERROR = 0.0025;
 const float ROTATE_SLOW_SPEED = 10; 
 const float ROTATE_TRESHOLD = 15; 
+const float CELL_SIZE = 0.70;
 #else
 const float ROTATE_ERROR = 0.1;
 const float ROTATE_SLOW_SPEED = 0.3; 
 const float ROTATE_TRESHOLD = 3; 
+const float CELL_SIZE = 0.6;
 #endif
 
-const float CELL_SIZE = 0.70;
+
 const float CELL_PADDING = 0.16;
-const float SIDE_DIFF = 0.08;
+const float SIDE_DIFF = 0.05;
 const float RANGE1 = CELL_SIZE + CELL_PADDING;
 const float RANGE2 = 2*CELL_SIZE + CELL_PADDING;
 const float RANGE3 = 3*CELL_SIZE + CELL_PADDING;
@@ -86,6 +88,7 @@ class Robot{
         bool moveToNearbyCell(Point p);
         void exploreRoute(std::vector<Point*> route);
         void exploreWorld();
+        std::vector<Point> findHidingSpots();
         void move(double distance);
         void checkProximity();
         void applyProximityToGrid();

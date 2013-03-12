@@ -23,8 +23,8 @@ int main(int argc, char *argv[]){
 	sleep(1);
 	
 	//starts at the left bottom of the map
-	r.gX = 7;
-	r.gY = 10;
+	r.gX = 5;
+	r.gY = 35;
         
 	
 	//r.moveToCell(NORTH);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
         
         
         
-        r.h = SOUTH;
+        r.h = EAST;
     //    r.moveToCell(NORTH);
 	//r.moveToCell(WEST);
 	//r.moveToCell(WEST);
@@ -59,8 +59,14 @@ int main(int argc, char *argv[]){
      //   r.rotate(-180);
         
         r.exploreWorld();
-        r.exploreRoute(findRoute(r.getGridPosition(), Point(5,35), &r));
-        r.rotate(-90);
+        
+        vector<Point> hideouts = r.findHidingSpots();
+        Point hideout = hideouts.at(0);
+        
+        r.exploreRoute(findRoute(Point(r.gX, r.gY), hideout, &r));
+        
+      
+        //r.rotate(-90);
 //        Point p = findNearestUnexplored(&r);
 //        cout << "Unexplored : " << p.x << " " << p.y << endl;
 //        
