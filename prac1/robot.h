@@ -19,10 +19,10 @@
 #include <libplayerc++/playerc++.h>
 using namespace PlayerCc;    
 
-const int GRID_SIZE = 40;
+const int GRID_SIZE = 15;
 
 #ifdef ROBOT
-const float ROTATE_ERROR = 0.0015;
+const float ROTATE_ERROR = 0.0025;
 const float ROTATE_SLOW_SPEED = 10; 
 const float ROTATE_TRESHOLD = 15; 
 #else
@@ -31,7 +31,7 @@ const float ROTATE_SLOW_SPEED = 0.3;
 const float ROTATE_TRESHOLD = 3; 
 #endif
 
-const float CELL_SIZE = 0.6;
+const float CELL_SIZE = 0.70;
 const float CELL_PADDING = 0.16;
 const float SIDE_DIFF = 0.08;
 const float RANGE1 = CELL_SIZE + CELL_PADDING;

@@ -81,13 +81,13 @@ void Robot::rotate(int degrees) {
         client->Read(); // reading sensors
         currentAngle = rtod(pp->GetYaw());
         distance = calcAngularDistance(currentAngle, expectedAngle);
-		
-		/*
-        std::cout << "Started at : " << initialAngle << std::endl;
-        std::cout << "Current angle: " << currentAngle << std::endl;
-        std::cout << "Going to: " << expectedAngle << std::endl;
-        std::cout << "Distance: " << distance << std::endl;
-		*/
+
+
+//std::cout << "Started at : " << initialAngle << std::endl;
+//std::cout << "Current angle: " << currentAngle << std::endl;
+//std::cout << "Going to: " << expectedAngle << std::endl;
+//std::cout << "Distance: " << distance << std::endl;
+
 
         if (distance < ROTATE_ERROR) {
             #ifdef ROBOT
@@ -97,8 +97,10 @@ void Robot::rotate(int degrees) {
             pp->SetSpeed(0,dtor(-speed));
             else
             pp->SetSpeed(0,dtor(speed));
-            usleep(600000);
-			#endif
+            usleep(700000);
+	    //id(degrees== 180 || degrees == -180) usleep(700000);
+	    #endif
+	    pp->SetSpeed(0, dtor(0));
             return;
         }
 
@@ -213,9 +215,17 @@ void Robot::move(double distance) {
         //std::cout << "X: " <<cX<<"Y: "<<cY << std::endl;
 
         cDistance = sqrt(pow(cX - iX, 2) + pow(cY - iY, 2));
-        if (cDistance - distance >= -0.005) break;
-        if (cDistance - distance >= -0.1) pp->SetSpeed(0.05, 0);
-        else pp->SetSpeed(0.2, 0);
+	//cout << cDistance << endl;
+	#ifdef ROBOT
+            if (cDistance - distance >= -0.01) break;
+            if (cDistance - distance >= -0.1) pp->SetSpeed(0.1, 0);
+            else pp->SetSpeed(0.2, 0);
+	    #else
+	    if (cDistance - distance >= -0.005) break;
+            if (cDistance - distance >= -0.1) pp->SetSpeed(0.05, 0);
+            else pp->SetSpeed(0.2, 0);
+	    #endif
+        
 
     }
     pp->SetSpeed(0, 0);

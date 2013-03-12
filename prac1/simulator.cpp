@@ -13,7 +13,7 @@ using namespace PlayerCc;
 int main(int argc, char *argv[]){
 
 	#ifdef ROBOT
-		Robot r("bart.islnet");
+		Robot r("marge.islnet");
 	#else
 		Robot r("localhost");
 	#endif	
@@ -23,8 +23,8 @@ int main(int argc, char *argv[]){
 	sleep(1);
 	
 	//starts at the left bottom of the map
-	r.gX = 5;
-	r.gY = 35;
+	r.gX = 7;
+	r.gY = 10;
         
 	
 	//r.moveToCell(NORTH);
@@ -51,12 +51,12 @@ int main(int argc, char *argv[]){
         
         
         
-        r.h = EAST;
-//        r.moveToCell(NORTH);
-//        r.moveToCell(WEST);
-//        r.moveToCell(WEST);
-//        r.moveToCell(WEST);
-//        r.rotate(90);
+        r.h = SOUTH;
+    //    r.moveToCell(NORTH);
+	//r.moveToCell(WEST);
+	//r.moveToCell(WEST);
+     //   r.moveToCell(WEST);
+     //   r.rotate(-180);
         
         r.exploreWorld();
         r.exploreRoute(findRoute(r.getGridPosition(), Point(5,35), &r));
