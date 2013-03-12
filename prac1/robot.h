@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <libplayerc++/playerc++.h>
+#include <fstream>
 using namespace PlayerCc;    
 
 const int GRID_SIZE = 40;
@@ -90,6 +91,9 @@ class Robot{
         void exploreWorld();
         std::vector<Point> findHidingSpots();
         void move(double distance);
+        void move(std::vector<Point*> route);
+        void saveGridToFile(std::string filename);
+        void loadGridFromFile(std::string filename);
         void checkProximity();
         void applyProximityToGrid();
         float calcAngularDistance(float a1, float a2);

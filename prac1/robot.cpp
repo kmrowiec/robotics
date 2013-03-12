@@ -3,6 +3,7 @@
 #include <libplayerc++/playerc++.h>
 #include <robot.h>
 #include <vector>
+#include <fstream>
 
 #include "utils.h"
 
@@ -186,6 +187,17 @@ void Robot::exploreRoute(vector<Point*> route){
         checkProximity();
         applyProximityToGrid();
     }
+}
+
+void Robot::move(vector<Point*> route){
+	if(route.empty()){
+        cout << "Cannot move - route is empty" << endl;       
+    }else{
+		int i;
+		for (i = 0; i < route.size(); i++) {
+			if(moveToNearbyCell(*(route.at(i))) == false) return;
+		}
+	}
 }
 
 void Robot::exploreWorld(){
@@ -452,6 +464,39 @@ void Robot::drawGrid() {
 
 Point Robot::getGridPosition(){
     return Point(gX, gY);
+}
+
+void Robot::saveGridToFile(string filename){
+	ofstream file;
+	file.open("grid.txt");
+	
+	int x, y;
+	for (y = 4; y < GRID_SIZE - 5; y++) {
+        for (x = 4; x < GRID_SIZE - 5; x++) {
+			file << grid[x][y] << ";" ;
+        }
+        file << endl;
+    }
+	file.close();
+}
+
+void Robot::loadGridFromFile(string filename){
+	ofstream file;
+	file.open("grid.txt");
+	
+	int g[GRID_SIZE][GRID_SIZE];
+	string line, number;
+	
+	int x, y;
+	for (y = 4; y < GRID_SIZE - 5; y++) {
+		getline(file, line);
+		vector<string> numbers = split(line, ';');
+        for (x = 4; x < GRID_SIZE - 5; x++) {
+			number = line.at(x-4); //loading number to string
+			//now need to convert string to int end save it in proper place in the array
+        }
+    }
+	file.close();
 }
 
 

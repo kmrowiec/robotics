@@ -29,6 +29,7 @@ public:
 vector<Point> getNeighbours(Point p);
 vector<Point*> findRoute(Point start, Point end, Robot * robot);
 Point findNearestUnexplored(Robot * r);
+vector<string> split(const string &s, char delim);
 
 #endif	/* UTILS_H */
 
