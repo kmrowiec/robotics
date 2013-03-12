@@ -203,8 +203,8 @@ void Robot::move(vector<Point*> route){
 void Robot::exploreWorld(){
     while(1){
         Point p = findNearestUnexplored(this);
-        cout << "Nearest unexplored point: " << p.x << " " << p.y <<endl;
-        cout << "Grid repres. : " << grid[p.x][p.y] << endl;
+        //cout << "Nearest unexplored point: " << p.x << " " << p.y <<endl;
+        //cout << "Grid repres. : " << grid[p.x][p.y] << endl;
         if(p.x == -1 && p.y == -1) break;
         vector<Point*> route = findRoute(this->getGridPosition(), p, this);
         this->exploreRoute(route);
@@ -293,11 +293,11 @@ void Robot::checkProximity() {
         p[i] = 0;
     }
     
-    cout << "Sensors:" << endl;
-    cout << "Front: " << (*sp)[3] <<" "<<(*sp)[4]<<endl;
-    cout << "Right: " << (*sp)[7] <<" "<<(*sp)[8]<<endl;
-    cout << "Back: " << (*sp)[11] <<" "<<(*sp)[12]<<endl;
-    cout << "Left: " << (*sp)[0] <<" "<<(*sp)[15]<<endl;
+//    cout << "Sensors:" << endl;
+//    cout << "Front: " << (*sp)[3] <<" "<<(*sp)[4]<<endl;
+//    cout << "Right: " << (*sp)[7] <<" "<<(*sp)[8]<<endl;
+//    cout << "Back: " << (*sp)[11] <<" "<<(*sp)[12]<<endl;
+//    cout << "Left: " << (*sp)[0] <<" "<<(*sp)[15]<<endl;
     
     bool wallNearby = false;
     if((*sp)[7] < RANGE1+SIDE_DIFF || (*sp)[8] < RANGE1+SIDE_DIFF || 
@@ -366,10 +366,10 @@ void Robot::checkProximity() {
  */
 void Robot::applyProximityToGrid() {
        
-     int i = 0;
-     for(i = 0; i< 16;i++){
-        cout << p[i]<< " ";
-     }
+//     int i = 0;
+//     for(i = 0; i< 16;i++){
+//        cout << p[i]<< " ";
+//     }
      
      grid[gX][gY] += FREE0; //where robot actually is, obviously the cell is free for sure
      
@@ -479,7 +479,7 @@ void Robot::saveGridToFile(string filename){
     }
 	file.close();
 }
-
+/*
 void Robot::loadGridFromFile(string filename){
 	ofstream file;
 	file.open("grid.txt");
@@ -497,7 +497,7 @@ void Robot::loadGridFromFile(string filename){
         }
     }
 	file.close();
-}
+} */
 
 
 

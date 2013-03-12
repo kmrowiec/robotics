@@ -10,36 +10,30 @@ using namespace std;
 using namespace PlayerCc;
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
 
-	#ifdef ROBOT
-		Robot r("marge.islnet");
-	#else
-		Robot r("localhost");
-	#endif	
-	
-	
-	r.client->Read();
-	sleep(1);
-	
-	//starts at the left bottom of the map
-	r.gX = 5;
-	r.gY = 35;
+#ifdef ROBOT
+    Robot r("marge.islnet");
+#else
+    Robot r("localhost");
+#endif	
+
+
+    r.client->Read();
+    sleep(1);
+
+    //starts at the left bottom of the map
+    r.gX = 5;
+    r.gY = 35;
     r.h = EAST;
-    
-    //    r.moveToCell(NORTH);
-	//r.moveToCell(WEST);
-	//r.moveToCell(WEST);
-     //   r.moveToCell(WEST);
-     //   r.rotate(-180);
-        
-     
+
+
     r.exploreWorld();
-    vector<Point> hideouts = r.findHidingSpots();
-    Point hideout = hideouts.at(0);
-    r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
-    r.saveGridToFile("dupa");
-        
+    //vector<Point> hideouts = r.findHidingSpots();
+    //Point hideout = hideouts.at(0);
+    //r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
+    //r.saveGridToFile("dupa");
+    
       
         
 }
