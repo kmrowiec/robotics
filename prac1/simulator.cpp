@@ -59,6 +59,8 @@ int main(int argc, char *argv[]){
 //        r.rotate(90);
         
         r.exploreWorld();
+        r.exploreRoute(findRoute(r.getGridPosition(), Point(5,35), &r));
+        r.rotate(-90);
 //        Point p = findNearestUnexplored(&r);
 //        cout << "Unexplored : " << p.x << " " << p.y << endl;
 //        
