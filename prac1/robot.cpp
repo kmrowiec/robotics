@@ -494,17 +494,88 @@ void Robot::loadGridFromFile(string filename){
 		vector<string> numbers = split(line, ';');
                 for (x = 0; x < GRID_SIZE; x++) {
 			number = numbers.at(x); //loading number to string
-                        cout << "string: " << number << endl;
-			//now need to convert string to int and save it in proper place in the array
-                        grid[x][y] = strtol(number.c_str(), NULL, 10);
-                        cout << "converted: " << strtol(number.c_str(), NULL, 10)<< endl;
+                        knownMap[x][y] = strtol(number.c_str(), NULL, 10);
                 }
         }
         file.close();
-        cout << "Grid loaded from file: " << endl;
-        drawGrid();
-	
+        cout << "Grid loaded from file. " << endl;	
 } 
+
+void Robot::recognisePosition(){
+    int startX = gX, startY = gY;
+    int diffX = 0, diffY = 0;
+    vector<Point> matchingPoints;
+    
+    checkProximity();
+    applyProximityToGrid();
+    
+    int x, y;
+    for(y = 4; y < GRID_SIZE - 4; y++){
+        for(x = 4; x < GRID_SIZE - 4; x++){
+            if(grid[gX][gY]!=0 ? (knownMap[x][y] * grid[gX][gY]> 0) : true)
+            if(knownMap[x+1][y] * grid[gX+1][gY] > 0)
+            if(grid[gX+2][gY]!=0 ? (knownMap[x+2][y] * grid[gX+2][gY] > 0) : true)
+            if(knownMap[x][y+1] * grid[gX][gY+1] > 0)
+            if(grid[gX][gY+2]!=0 ? (knownMap[x][y+2] * grid[gX][gY+2] > 0) : true)
+            if(knownMap[x-1][y] * grid[gX-1][gY] > 0)
+            if(grid[gX-2][gY]!=0 ? (knownMap[x-2][y] * grid[gX-2][gY] > 0) : true)
+            if(knownMap[x][y-1] * grid[gX][gY-1] > 0)
+            if(grid[gX][gY-2]!=0 ? (knownMap[x][y-2] * grid[gX][gY-2] > 0) : true)
+                matchingPoints.push_back(Point(x,y));
+        }   
+    }
+    
+    
+    while(matchingPoints.size() > 1){
+        Point p = findNearestUnexplored(this);
+        if(p.x == -1 && p.y == -1) break;
+        vector<Point*> route = findRoute(this->getGridPosition(), p, this);
+        this->exploreRoute(route);
+        
+        vector<Point> tempPoints;
+        diffX = gX - startX;
+        diffY = gY - startY;
+        
+        int i;
+        for(i = 0; i < matchingPoints.size(); i++){
+            Point * p = &matchingPoints.at(i);
+            if(grid[gX][gY]!=0 ? (knownMap[p->x+diffX][p->y+diffY] * grid[gX][gY]> 0) : true)
+            if(knownMap[p->x+1+diffX][p->y+diffY] * grid[gX+1][gY] > 0)
+            if(grid[gX+2][gY]!=0 ? (knownMap[p->x+2+diffX][p->y+diffY] * grid[gX+2][gY] > 0) : true)
+            if(knownMap[p->x+diffX][p->y+1+diffY] * grid[gX][gY+1] > 0)
+            if(grid[gX][gY+2]!=0 ? (knownMap[p->x+diffX][p->y+2+diffY] * grid[gX][gY+2] > 0) : true)
+            if(knownMap[p->x-1+diffX][p->y+diffY] * grid[gX-1][gY] > 0)
+            if(grid[gX-2][gY]!=0 ? (knownMap[p->x-2+diffX][p->y+diffY] * grid[gX-2][gY] > 0) : true)
+            if(knownMap[p->x+diffX][p->y-1+diffY] * grid[gX][gY-1] > 0)
+            if(grid[gX][gY-2]!=0 ? (knownMap[p->x+diffX][p->y-2+diffY] * grid[gX][gY-2] > 0) : true)
+                tempPoints.push_back(matchingPoints.at(i));
+        }
+        matchingPoints = tempPoints;
+        cout << "Number of matching points : " << matchingPoints.size() <<endl;
+    }
+    
+    if(matchingPoints.size() == 0){
+        cout << "Error: position does not match known map at all!" << endl;
+        return;
+    }
+    
+    Point location(matchingPoints.front().x + diffX,matchingPoints.front().y + diffY);
+    
+    cout << "Found location on the map! " << endl;
+    cout << "Location is : " << location.x << " " << location.y <<endl;
+    
+    for(y = 0; y < GRID_SIZE; y++){
+        for(x = 0; x < GRID_SIZE; x++){
+            grid[x][y] = knownMap[x][y];
+        }
+    }
+    
+    
+    
+    this->gX = location.x;
+    this->gY = location.y;
+    drawGrid();
+}
 
 
 

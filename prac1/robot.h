@@ -73,6 +73,7 @@ class Robot{
          * We assume that cell is known if number is <-10 or >10.
          */
 	int grid[GRID_SIZE][GRID_SIZE];
+        int knownMap[GRID_SIZE][GRID_SIZE]; 
         
 	int p[16]; //proximity 
 	int gX, gY; //position on the grid
@@ -95,6 +96,7 @@ class Robot{
         float calcAngularDistance(float a1, float a2);
         Point getGridPosition();
         void drawGrid();
+        void recognisePosition();
         
 };
 
