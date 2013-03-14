@@ -4,6 +4,7 @@
 #include <robot.h>
 #include <vector>
 #include <fstream>
+#include <cstdlib>
 
 #include "utils.h"
 
@@ -471,33 +472,39 @@ void Robot::saveGridToFile(string filename){
 	file.open("grid.txt");
 	
 	int x, y;
-	for (y = 4; y < GRID_SIZE - 5; y++) {
-        for (x = 4; x < GRID_SIZE - 5; x++) {
+	for (y = 0; y < GRID_SIZE; y++) {
+        for (x = 0; x < GRID_SIZE; x++) {
 			file << grid[x][y] << ";" ;
         }
         file << endl;
     }
 	file.close();
 }
-/*
+
 void Robot::loadGridFromFile(string filename){
-	ofstream file;
+	ifstream file;
 	file.open("grid.txt");
 	
-	int g[GRID_SIZE][GRID_SIZE];
+	//int g[GRID_SIZE][GRID_SIZE];
 	string line, number;
 	
 	int x, y;
-	for (y = 4; y < GRID_SIZE - 5; y++) {
+	for (y = 0; y < GRID_SIZE; y++) {
 		getline(file, line);
 		vector<string> numbers = split(line, ';');
-        for (x = 4; x < GRID_SIZE - 5; x++) {
-			number = line.at(x-4); //loading number to string
-			//now need to convert string to int end save it in proper place in the array
+                for (x = 0; x < GRID_SIZE; x++) {
+			number = numbers.at(x); //loading number to string
+                        cout << "string: " << number << endl;
+			//now need to convert string to int and save it in proper place in the array
+                        grid[x][y] = strtol(number.c_str(), NULL, 10);
+                        cout << "converted: " << strtol(number.c_str(), NULL, 10)<< endl;
+                }
         }
-    }
-	file.close();
-} */
+        file.close();
+        cout << "Grid loaded from file: " << endl;
+        drawGrid();
+	
+} 
 
 
 

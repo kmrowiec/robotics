@@ -18,11 +18,10 @@ using namespace std;
 
 class TreeNode{
 public:
-    TreeNode * root;
     Point content;
     Heading robotHeadingAtNode;
     
-    TreeNode(TreeNode * root, Point content, Heading h);
+    TreeNode(Point content, Heading h);
     bool checkParents(TreeNode * start, Point p);
 };
 

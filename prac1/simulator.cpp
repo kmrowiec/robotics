@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
     r.gY = 35;
     r.h = EAST;
 
-
-    r.exploreWorld();
+        r.loadGridFromFile("dpa");
+    //r.exploreWorld();
     //vector<Point> hideouts = r.findHidingSpots();
     //Point hideout = hideouts.at(0);
     //r.move(findRoute(Point(r.gX, r.gY), hideout, &r));

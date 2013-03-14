@@ -7,10 +7,6 @@
 
 #ifndef ROBOT_H
 #define	ROBOT_H
-
-//#ifdef	__cplusplus
-//extern "C" {
-//#endif
     
 #include <iostream>
 #include <others.h>
@@ -101,10 +97,6 @@ class Robot{
         void drawGrid();
         
 };
-
-//#ifdef	__cplusplus
-//}
-//#endif
 
 #endif	/* ROBOT_H */
 

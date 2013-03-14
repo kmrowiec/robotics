@@ -18,21 +18,10 @@ Point::Point(){
    this->y = 0;
 }
 
-TreeNode::TreeNode(TreeNode * root, Point content, Heading h){
-    this->root = root;
+TreeNode::TreeNode(Point content, Heading h){
     this->content.x = content.x;
     this->content.y = content.y;
     this->robotHeadingAtNode = h;
-}
-
-bool checkParents(TreeNode * start, Point p){
-    TreeNode * current = start;
-    while(current->root != NULL){
-        if(current->root->content.x == p.x && current->root->content.y == p.y)
-            return true;
-        current = current->root;
-    }
-    return false;
 }
 
 vector<Point> getNeighbours(Point p){
@@ -57,21 +46,19 @@ Heading getCellsHeading(Point p, Point q){
 
 vector<Point*> findRoute(Point start, Point end, Robot * robot){
     
-    TreeNode * treeRoot = new TreeNode(NULL, start, robot->h);
+    TreeNode * treeRoot = new TreeNode(start, robot->h);
     stack<TreeNode*> items;
     vector<Point> explored;
     
-    vector<Point*> correct_path;
+    //Checking if the end cell is not occupied
+    //if is, obviously path would not exist
+    if (robot->grid[end.x][end.y] < -20) {
+        items.push(treeRoot);
+        explored.push_back(start);
+    }
     
-    items.push(treeRoot);
-    explored.push_back(start);
-    
-    //vector<Point*> nbs; //neighbours
-    //vector<TreeNode*> nbs_nodes;
     TreeNode * current;
     TreeNode * finish = NULL;
-    
-     //cout << "END point: " << end.x << " " << end.y <<endl;
     
     while(!items.empty()){
         //sleep(1);
@@ -83,8 +70,8 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
             break;
         }
         
-        vector<Point> nbs; //neighbours
-        vector<TreeNode*> nbs_nodes;
+        vector<Point> nbs; //will hold adjacent points
+        vector<TreeNode*> nbs_nodes; // will hold adjacent cells as nodes in the search tree
         
         nbs = getNeighbours(current->content);
         
@@ -92,31 +79,36 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
         for(i = 0; i< nbs.size(); i++){
             int j; 
             bool contains = false;
+            //Checking if the cell has been checked before
             for(j = 0; j< explored.size(); j++){
                 if(explored.at(j).x == nbs.at(i).x && explored.at(j).y == nbs.at(i).y){
                     contains = true; break;
                 }
             }
             if(!contains){
-               //HERE NEEDS TO CHECK IF NOT OCCUPIED
+               //Checking if the cell is not occupied
                if(robot->grid[nbs.at(i).x][nbs.at(i).y] < -20)
-               nbs_nodes.push_back(new TreeNode(current, nbs.at(i), getCellsHeading(current->content,nbs.at(i))));
+               nbs_nodes.push_back(new TreeNode(nbs.at(i), getCellsHeading(current->content,nbs.at(i))));
             } 
         }
         
         if(nbs_nodes.empty()) items.pop();
         
         vector<TreeNode*> children;
+        //Cell that lays in straight line will be added first,
+        //what makes sure that it will be used at the first place, if adequate
         for(i = 0; i< nbs_nodes.size(); i++){
             if(nbs_nodes.at(i)->robotHeadingAtNode == current->robotHeadingAtNode)
                 children.push_back(nbs_nodes.at(i));
         }
+        //Now adding remaining cells
         for(i = 0; i< nbs_nodes.size(); i++){
             if(nbs_nodes.at(i)->robotHeadingAtNode != current->robotHeadingAtNode)
                 children.push_back(nbs_nodes.at(i));
         }
         TreeNode * closest;
         int howClose = 9999;
+        //Picking cell closest to destination
         for(i = 0; i< children.size(); i++){
             int a = children.at(i)->content.x - end.x;
             int b = children.at(i)->content.y - end.y;
@@ -125,42 +117,32 @@ vector<Point*> findRoute(Point start, Point end, Robot * robot){
                 howClose = sum;
                 closest = children.at(i);
             }
-        }
-        
-        items.push(closest);
-        //cout << "Closest point: " << closest->content.x << " " << closest->content.y <<endl;
-        explored.push_back(Point(closest->content.x, closest->content.y));
-        
-        
+        }   
+        items.push(closest); 
+        explored.push_back(Point(closest->content.x, closest->content.y));      
     } 
     
-    cout << "DONE!" << endl;
-    
-    if(finish == NULL){
+    //If stack is empty, path is not found
+    if(items.empty()){
         cout <<"Cannot find path" <<endl;
-        return correct_path;
+        return vector<Point*>();
     }
     
-    TreeNode * node = finish;
-//    while(node->root != NULL){
-//        cout << node->content->x << ", " << node->content->y << " -> " <<endl;
-//        node = node->root;
-//    }
-    
-    vector<Point*> path;
-    node = finish;
-    while(node->root != NULL){
-        path.push_back(new Point(node->content.x, node->content.y));
-        node = node->root;
+    //Otherwise, forming the path and returning it.
+    stack<TreeNode*> temp;
+    cout << "Items size : " << items.size() << endl;
+    while(!items.empty()){
+        temp.push(items.top());
+        items.pop();
     }
-    
-    
-    int i;
-    for(i = path.size()-1; i >=0; i--){
-        correct_path.push_back(path.at(i));
-        cout << path.at(i)->x << ", " << path.at(i)->y << " -> " ;
+    cout << "Temp size : " << temp.size() << endl;
+    vector<Point*> correct_path;
+    while(!temp.empty()){
+        correct_path.push_back(new Point(temp.top()->content.x, 
+                temp.top()->content.y));
+        temp.pop();
     }
-
+    cout << "path size : " << correct_path.size() << endl;
     return correct_path;
     
     
@@ -186,12 +168,11 @@ Point findNearestUnexplored(Robot * r){
         vector<Point> children = getNeighbours(*current);
         if(children.empty()) continue;
         int i;
-        int j;
-        
+        int j;    
         for(i = 0; i<children.size(); i++){
             
             bool contains = false;
-            
+            //Checking if the cell has already been checked
             for(j = 0; j<explored.size(); j++){
                 if(explored.at(j).x == children.at(i).x && 
                         explored.at(j).y == children.at(i).y){
@@ -214,14 +195,6 @@ Point findNearestUnexplored(Robot * r){
     return Point(-1,-1); //When no such cell is found.
 }
 
-vector<string> &split(const string &s, char delim, vector<string> &elems) {
-    stringstream ss(s);
-    string item;
-    while(getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
 
 
 vector<string> split(const string &s, char delim) {
