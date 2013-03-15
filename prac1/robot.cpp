@@ -101,7 +101,7 @@ void Robot::rotate(int degrees) {
             else
             pp->SetSpeed(0,dtor(speed));
             usleep(700000);
-	    //id(degrees== 180 || degrees == -180) usleep(700000);
+	    if(degrees== 180 || degrees == -180) usleep(600000);
 			pp->SetSpeed(0, dtor(0));
 			#endif
 	    
@@ -294,11 +294,11 @@ void Robot::checkProximity() {
         p[i] = 0;
     }
     
-//    cout << "Sensors:" << endl;
-//    cout << "Front: " << (*sp)[3] <<" "<<(*sp)[4]<<endl;
-//    cout << "Right: " << (*sp)[7] <<" "<<(*sp)[8]<<endl;
-//    cout << "Back: " << (*sp)[11] <<" "<<(*sp)[12]<<endl;
-//    cout << "Left: " << (*sp)[0] <<" "<<(*sp)[15]<<endl;
+    cout << "Sensors:" << endl;
+    cout << "Front: " << (*sp)[3] <<" "<<(*sp)[4]<<endl;
+    cout << "Right: " << (*sp)[7] <<" "<<(*sp)[8]<<endl;
+    cout << "Back: " << (*sp)[11] <<" "<<(*sp)[12]<<endl;
+    cout << "Left: " << (*sp)[0] <<" "<<(*sp)[15]<<endl;
     
     bool wallNearby = false;
     if((*sp)[7] < RANGE1+SIDE_DIFF || (*sp)[8] < RANGE1+SIDE_DIFF || 

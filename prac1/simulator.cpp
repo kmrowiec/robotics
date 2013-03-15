@@ -13,7 +13,7 @@ using namespace PlayerCc;
 int main(int argc, char *argv[]) {
 
 #ifdef ROBOT
-    Robot r("marge.islnet");
+    Robot r("bart.islnet");
 #else
     Robot r("localhost");
 #endif	
@@ -27,14 +27,24 @@ int main(int argc, char *argv[]) {
 //    r.gY = 35;
     r.gX =16;
     r.gY = 16;
-    r.h = EAST;
+    r.h = NORTH;
+    
 
-        r.loadGridFromFile("dpa");
-        r.recognisePosition();
-    //r.exploreWorld();
-    //vector<Point> hideouts = r.findHidingSpots();
-    //Point hideout = hideouts.at(0);
-    //r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
+    //r.loadGridFromFile("dpa");
+   // r.recognisePosition();
+    r.exploreWorld();
+    r.saveGridToFile("dupa");
+   
+    
+    vector<Point> hideouts = r.findHidingSpots();
+    cout << "DONE" << endl;
+    Point hideout = hideouts.at(0);
+    cout << hideout.x << " " << hideout.y << endl;
+    vector<Point*> route = findRoute(Point(r.gX, r.gY), hideout, &r);
+    cout << "done";
+    r.move(route);
+    
+    
     //r.saveGridToFile("dupa");
     
       
