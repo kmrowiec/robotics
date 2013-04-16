@@ -84,9 +84,10 @@ class Robot{
         void rotate(int degrees);
         void moveToCell(Heading dest);
         bool moveToNearbyCell(Point p);
+        bool moveToCellIfEmpty(Heading dest);
         void exploreRoute(std::vector<Point*> route);
         void exploreWorld();
-        std::vector<Point> findHidingSpots();
+        bool checkForRobot(Point p);
         void move(double distance);
         void move(std::vector<Point*> route);
         void saveGridToFile(std::string filename);
@@ -97,6 +98,8 @@ class Robot{
         Point getGridPosition();
         void drawGrid();
         void recognisePosition();
+        std::vector<Point> findHidingSpots();
+        void findHiddenRobot();
         
 };
 

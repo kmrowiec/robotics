@@ -69,8 +69,8 @@ void Robot::rotate(int degrees) {
 
     float currentAngle = 0;
 
-    //Caclulating expected angle (in degrees)
-    //If ig goes above 181, need to substract -360
+    //Calculating expected angle (in degrees)
+    //If ig goes above 181, need to subtract -360
     //Or add 360 if below -180
     float expectedAngle = initialAngle + degrees;
     if (expectedAngle > 180) expectedAngle -= 360;
@@ -134,14 +134,44 @@ void Robot::moveToCell(Heading dest) {
             break;
     }
     //if NORTH then we just move forward
-    //if not, we changed heading (i. e. rotated) first
+    //if not, we changed heading (i. e. rotated) first  
     move(CELL_SIZE);
     //changing xy position on the grid
     if (h == NORTH) gY--;
     else if (h == EAST) gX++;
     else if (h == WEST) gX--;
-    else gY++;    
+    else gY++;  
 }
+
+bool Robot::moveToCellIfEmpty(Heading dest) {
+    switch (dest) {
+        case WEST:
+            changeHeading(WEST);
+            break;
+        case SOUTH:
+            changeHeading(SOUTH);
+            break;
+        case EAST:
+            changeHeading(EAST);
+            break;
+    }
+    //if NORTH then we just move forward
+    //if not, we changed heading (i. e. rotated) first
+    //First checking if there is no obstacle ahead.
+    //if is, returning false;
+    client->Read();
+    if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1) return false;
+    
+    move(CELL_SIZE);
+    //changing xy position on the grid
+    if (h == NORTH) gY--;
+    else if (h == EAST) gX++;
+    else if (h == WEST) gX--;
+    else gY++; 
+    return true;
+}
+
+
 
 bool Robot::moveToNearbyCell(Point p){
     if(grid[p.x][p.y] > -20) return false;
@@ -190,6 +220,97 @@ void Robot::exploreRoute(vector<Point*> route){
     }
 }
 
+void Robot::findHiddenRobot(){
+    vector<Point> hideouts = findHidingSpots();
+    int i = 0;
+    for(i; i<hideouts.size(); i++){
+        if(checkForRobot(hideouts.at(i))){
+            cout << "Found robot at x=" << gX << " and y=" <<gY << endl;
+            return;
+        }
+    }
+    cout << "Cannot find a robot :( " << endl;
+}
+
+
+//Goes to the point given as parameter and checks if a robot is hidden there.
+//Returns true if robot is found, false otherwise.
+bool Robot::checkForRobot(Point p){
+    vector<Point*> route = findRoute(Point(this->gX, this->gY), p, this);
+    route.pop_back(); //removing last element, so the robot will stop one cell
+                      //before the expected hideout
+    move(route);
+    
+    Heading useSensors;
+    if(p.x == gX){
+        if(p.y > gY){
+            //robot is in the cell to the north of the target
+            if(h==WEST){
+                //use left hand side sensors
+                useSensors = WEST;
+            }else if(h==SOUTH){
+                //use front sensors
+                useSensors = NORTH;
+            }else{
+                useSensors = EAST;
+                //use right hand side sensors
+            }
+        }
+        else{ 
+            //robot is in the cell to the south of the target
+            if(h==WEST){
+                //use right hand side sensors
+                useSensors = EAST;
+            }else if(h==NORTH){
+                //use front sensors
+                useSensors = NORTH;
+            }else{
+                //use left hand side sensors
+                useSensors = WEST;
+            }
+        }
+    }else{
+        if(p.x > gX){
+            //robot is in the cell to the west of the target
+            if(h==NORTH){
+                //use right hand side sensors
+                useSensors = EAST;
+            }else if(h==EAST){
+                //use front sensors
+                useSensors = NORTH;
+            }else{
+                //use left hand side sensors
+                useSensors = WEST;
+            }
+        }
+        else{
+            //robot is in the cell to the east of the target
+            if(h==NORTH){
+                //use left hand side sensors
+                useSensors = WEST;
+            }else if(h==WEST){
+                //use front sensors
+                useSensors = NORTH;
+            }else{
+                //use right hand side sensors
+                useSensors = EAST;
+            }
+        }
+    }
+    
+    if(useSensors == NORTH){
+        //using sensors in front of the robot
+        if((*sp)[3] < RANGE1 || (*sp)[4] < RANGE1) return true;
+        
+    }else if(useSensors == WEST){
+        if((*sp)[0] < RANGE1 || (*sp)[15] < RANGE1) return true;
+    }else{
+        if((*sp)[7] < RANGE1 || (*sp)[8] < RANGE1) return true;
+    }
+    return false;
+    
+}
+
 void Robot::move(vector<Point*> route){
 	if(route.empty()){
         cout << "Cannot move - route is empty" << endl;       
@@ -220,27 +341,33 @@ vector<Point> Robot::findHidingSpots(){
 	
 	int x = 0, y = 0;
 	int n;
-    for (y = 4; y < GRID_SIZE - 5; y++) {
-        for (x = 4; x < GRID_SIZE - 5; x++) {
-            if(grid[x][y] < -20){ // if the cell is not occupied
-				n = 0;
-				
-				//checking how many walls are adjacent to the cell
-				if(grid[x][y-1] > 20) n++;
-				if(grid[x][y+1] > 20) n++;
-				if(grid[x-1][y] > 20) n++;
-				if(grid[x+1][y] > 20) n++;
-				
-				if(n>2){ //if three walls around
-					best_hideouts.push_back(Point(x,y));
-				}else if(n>1){
-					good_hideouts.push_back(Point(x,y));
-				}
-			}             
+        for (y = 4; y < GRID_SIZE - 5; y++) {
+            for (x = 4; x < GRID_SIZE - 5; x++) {
+                if(grid[x][y] < -20){ // if the cell is not occupied
+                                    n = 0;
+
+                                    //checking how many walls are adjacent to the cell
+                                    if(grid[x][y-1] > 20) n++;
+                                    if(grid[x][y+1] > 20) n++;
+                                    if(grid[x-1][y] > 20) n++;
+                                    if(grid[x+1][y] > 20) n++;
+
+                                    if(n==3){ //if three walls around
+                                            best_hideouts.push_back(Point(x,y));
+                                    }else if(n==2){
+                                            good_hideouts.push_back(Point(x,y));
+                                    }
+                            }             
+            }
         }
-    }
     
-    return best_hideouts.empty() ? good_hideouts : best_hideouts;
+        int i = 0;
+        for(i; i<good_hideouts.size(); i++){
+            best_hideouts.push_back(good_hideouts.at(i));
+        }
+        
+        
+    return best_hideouts;
 }
 	
 

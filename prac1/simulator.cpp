@@ -10,6 +10,7 @@ using namespace std;
 using namespace PlayerCc;
 
 
+
 int main(int argc, char *argv[]) {
 
 #ifdef ROBOT
@@ -29,11 +30,11 @@ int main(int argc, char *argv[]) {
     r.gY = 16;
     r.h = EAST;
 
-        r.loadGridFromFile("dpa");
-        r.recognisePosition();
-    //r.exploreWorld();
-    //vector<Point> hideouts = r.findHidingSpots();
-    //Point hideout = hideouts.at(0);
+       // r.loadGridFromFile("dpa");
+      //  r.recognisePosition();
+    r.exploreWorld();
+    vector<Point> hideouts = r.findHidingSpots();
+    Point hideout = hideouts.at(0);
     //r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
     //r.saveGridToFile("dupa");
     
