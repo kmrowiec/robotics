@@ -22,17 +22,21 @@ const int GRID_SIZE = 40;
 const float ROTATE_ERROR = 0.0025;
 const float ROTATE_SLOW_SPEED = 10; 
 const float ROTATE_TRESHOLD = 15; 
-const float CELL_SIZE = 0.70;
+const float CELL_SIZE = 0.7;
+const float SIDE_DIFF = 0.15;
+const float CELL_PADDING = 0.05;
 #else
 const float ROTATE_ERROR = 0.1;
 const float ROTATE_SLOW_SPEED = 0.3; 
 const float ROTATE_TRESHOLD = 3; 
 const float CELL_SIZE = 0.6;
+const float SIDE_DIFF = 0.08;
+const float CELL_PADDING = 0.16;
 #endif
 
 
-const float CELL_PADDING = 0.16;
-const float SIDE_DIFF = 0.05;
+
+
 const float RANGE1 = CELL_SIZE + CELL_PADDING;
 const float RANGE2 = 2*CELL_SIZE + CELL_PADDING;
 const float RANGE3 = 3*CELL_SIZE + CELL_PADDING;
