@@ -14,7 +14,7 @@ using namespace PlayerCc;
 int main(int argc, char *argv[]) {
 
 #ifdef ROBOT
-    Robot r("bart.islnet");
+    Robot r("lisa.islnet");
 #else
     Robot r("localhost");
 #endif	
@@ -24,18 +24,37 @@ int main(int argc, char *argv[]) {
     sleep(1);
 
     //starts at the left bottom of the map
-    r.gX = 5;
-    r.gY = 35;
-    r.h = EAST;
+    r.gX = 25;
+    r.gY = 34;
+    r.h = NORTH;
 
-       // r.loadGridFromFile("dpa");
-      //  r.recognisePosition();
+    /*
+    r.rotate(-180);
+    r.move(0.8);
+    r.rotate(-90);
+    r.move(0.8);
+    r.rotate(-90);
+    r.move(0.8);
+    r.rotate(-90);
+    r.move(0.8);
+    r.rotate(-90);
+    */
+    
+    
+    
+     r.loadGridFromFile("dpa");
+     r.recognisePosition();
+     r.findHiddenRobot();
+     
+     
+    /*
     r.exploreWorld();
-    //r.saveGridToFile("dupa");
+    r.saveGridToFile("dupa");
     vector<Point> hideouts = r.findHidingSpots();
     Point hideout = hideouts.at(0);
-    //r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
-
+    r.move(findRoute(Point(r.gX, r.gY), hideout, &r));
+    cout << "I am hidden!" << endl;
+    */
     
       
         

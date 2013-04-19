@@ -93,6 +93,7 @@ void Robot::rotate(int degrees) {
 
 
         if (distance < ROTATE_ERROR) {
+	  cout<< "FINISHING!" <<endl;
             #ifdef ROBOT
             int i = 0;
             speed = 10;
@@ -100,9 +101,11 @@ void Robot::rotate(int degrees) {
             pp->SetSpeed(0,dtor(-speed));
             else
             pp->SetSpeed(0,dtor(speed));
+	    
             usleep(700000);
 	    if(degrees== 180 || degrees == -180) usleep(600000);
 			pp->SetSpeed(0, dtor(0));
+	    cout<< "SPEED IS ZERO!" <<endl;
 			#endif
 	    
             return;
